@@ -15,5 +15,8 @@ def bulk_insert(session, n=10):
 
 def consume_key(session):
     new_key = session.query(Key).filter_by(used=False).first()
+    if new_key is None:
+        bulk_insert(session)
+        new_key = session.query(Key).filter_by(used=False).first()
     new_key.used = True
     return new_key
