@@ -7,8 +7,8 @@
 {% block body %}
 <h1> Update URL</h1>
 
-<form action="/update/{{ url.my_key }}" method="POST" style="width:50em;text-align: center;">
-    <input type="text" name="long_url" id="content" value="{{ url.long_url }}" style="width: 50%;">
+<form action="/update/{{ url['my_key'] }}" method="POST" style="width:50em;text-align: center;">
+    <input type="text" name="long_url" id="content" value="{{ url['long_url'] }}" style="width: 50%;">
     <input type="submit" value="Update URL">
 </form>
 {% endblock %}

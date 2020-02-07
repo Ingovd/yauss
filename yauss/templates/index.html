@@ -7,7 +7,7 @@
 {% block body %}
 <h1> All URLs </h1>
 
-{% if urls|length < 1 %}
+{% if urls.count() < 1 %}
 
     <h4>No shortened URLs in the system, add one below.</h4>
 
@@ -21,12 +21,12 @@
         </tr>
         {% for url in urls %}
             <tr>
-                <td>{{ url.my_key }}</td>   
-                <td>{{ url.long_url }}</td>
+                <td>{{ url['my_key'] }}</td>   
+                <td>{{ url['long_url'] }}</td>
                 <td>
-                    <a href="/delete/{{ url.my_key }}">Delete</a>
+                    <a href="/delete/{{ url['my_key'] }}">Delete</a>
                     <br>
-                    <a href="/update/{{ url.my_key }}">Update</a>
+                    <a href="/update/{{ url['my_key'] }}">Update</a>
                 </td>
             </tr>
         {% endfor %}
