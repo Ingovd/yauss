@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_pymongo import PyMongo
+from .database import MongoAPI
 
 mongo = PyMongo()
 
@@ -9,6 +10,7 @@ def create_app():
 
     with app.app_context():
         mongo.init_app(app)
+        app.api = MongoAPI(mongo)
         from yauss.routes import url_crud
         app.register_blueprint(url_crud)
     return app
