@@ -13,10 +13,11 @@ from yauss.database import (create_url,
 
 url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
-@url_crud.route('/', methods=['POST'])
+
 def handle_create_url():
     create_url(request.form['long_url'])
     return redirect('/')
+url_crud.add_url_rule('/', 'handle_create_url', handle_create_url, methods=['POST'])
 
 @url_crud.route('/<my_key>')
 def handle_read_url(my_key):
