@@ -14,11 +14,12 @@ def handle_create_url():
 
 @url_crud.route('/<my_key>')
 def handle_read_url(my_key):
-    url_to_redirect = app.api.read_url_or_404(my_key)
-    return redirect("http://" + url_to_redirect['long_url'])
+    url = app.api.read_url_or_404(my_key)
+    return redirect("http://" +  url['long_url'])
 
 @url_crud.route('/update/<my_key>', methods=['POST'])
 def handle_update_url(my_key):
+    print(request.form['long_url'])
     app.api.update_url(my_key, request.form['long_url'])
     return redirect('/')
 

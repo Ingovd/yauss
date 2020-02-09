@@ -7,12 +7,11 @@
 {% block body %}
 <h1> All URLs </h1>
 
-{% if urls.count() < 1 %}
+{% if urls|length < 1 %}
 
     <h4>No shortened URLs in the system, add one below.</h4>
 
 {% else %}
-
     <table style="width: 50em;">
         <tr>
             <th>Key</th>

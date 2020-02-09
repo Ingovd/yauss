@@ -6,27 +6,27 @@ class DatabaseAPI:
 
     def generate_key(self, k=8):
         return "".join(choices(self._chars, k=k))
-
-    def create_url(self, long_url, key_string=None):
+    
+    def create_url(self, long_url, key=None):
         raise NotImplementedError
 
-    def read_url_or_404(self, my_key):
+    def read_url_or_404(self, key):
         raise NotImplementedError
 
     def read_all_urls(self):
         raise NotImplementedError
 
-    def update_url(self, my_key, long_url):
+    def update_url(self, key, long_url):
         raise NotImplementedError
         
-    def delete_url(self, my_key):
+    def delete_url(self, key):
         raise NotImplementedError
 
     def bulk_generate_keys(self, n=10):
         raise NotImplementedError
 
-    def insert_key(self, new_key):
+    def insert_key(self, key):
         raise NotImplementedError
 
-    def consume_key(self):
+    def consume_key(self, key):
         raise NotImplementedError
