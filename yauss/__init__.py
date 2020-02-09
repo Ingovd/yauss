@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_pymongo import PyMongo
-from .database import MongoAPI
+from .database.mongo import MongoAPI
 
 mongo = PyMongo()
 

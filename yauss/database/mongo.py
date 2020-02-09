@@ -1,9 +1,8 @@
-from random import choices
+from .api import DatabaseAPI
 
-_chars = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")
-
-class MongoAPI:
+class MongoAPI(DatabaseAPI):
     def __init__(self, mongo):
+        super().__init__()
         self.mongo = mongo
         self.db = mongo.db
 
@@ -27,9 +26,6 @@ class MongoAPI:
     def delete_url(self, my_key):
         url = self.db.urls.find_one_or_404({'my_key': my_key})
         self.db.urls.delete_one(url)
-
-    def generate_key(self, k=8):
-        return "".join(choices(_chars, k=k))
 
     def bulk_generate_keys(self, n=10):
         new_keys = []
