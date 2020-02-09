@@ -3,13 +3,20 @@ from flask_pymongo import PyMongo
 from flask_sqlalchemy import SQLAlchemy
 from .database.mongo import MongoAPI
 from .database.sql import SqlAPI
+from .database.inmemory import InMemoryDB
 
 mongo = PyMongo()
 sql = SQLAlchemy()
+
 # db = mongo
 # Api = MongoAPI
-db = sql
-Api = SqlAPI
+
+# db = sql
+# Api = SqlAPI
+
+db = type('obj', (object,), {'init_app' : lambda app: None, 'db' : {}})
+Api = InMemoryDB
+
 
 def create_app():
     app = Flask(__name__)
