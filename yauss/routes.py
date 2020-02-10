@@ -1,4 +1,3 @@
-import sys
 from flask import (Blueprint,
                    render_template,
                    request,
@@ -12,25 +11,25 @@ def handle_create_url():
     app.api.create_url(request.form['long_url'])
     return redirect('/')
 
-@url_crud.route('/<my_key>')
-def handle_read_url(my_key):
-    url = app.api.read_url_or_404(my_key)
+@url_crud.route('/<key>')
+def handle_read_url(key):
+    url = app.api.read_url_or_404(key)
     return redirect("http://" +  url['long_url'])
 
-@url_crud.route('/update/<my_key>', methods=['POST'])
-def handle_update_url(my_key):
+@url_crud.route('/update/<key>', methods=['POST'])
+def handle_update_url(key):
     print(request.form['long_url'])
-    app.api.update_url(my_key, request.form['long_url'])
+    app.api.update_url(key, request.form['long_url'])
     return redirect('/')
 
-@url_crud.route('/delete/<my_key>')
-def handle_delete_url(my_key):
-    app.api.delete_url(my_key)
+@url_crud.route('/delete/<key>')
+def handle_delete_url(key):
+    app.api.delete_url(key)
     return redirect('/')
 
-@url_crud.route('/update/<my_key>', methods=['GET'])
-def show_update_view(my_key):
-    url = app.api.read_url_or_404(my_key)
+@url_crud.route('/update/<key>', methods=['GET'])
+def show_update_view(key):
+    url = app.api.read_url_or_404(key)
     return render_template('update.html', url=url)
 
 @url_crud.route('/', methods=['GET'])
