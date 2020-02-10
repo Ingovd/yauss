@@ -1,9 +1,12 @@
 from contextlib import contextmanager
-from .api import DatabaseAPI
-from flask import current_app
+
+from flask import current_app as app
+
 from sqlalchemy import String, Boolean, Column
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.ext.declarative import declarative_base
+
+from .api import DatabaseAPI
 
 Base = declarative_base()
 
@@ -61,7 +64,7 @@ class SqlAPI(DatabaseAPI):
     @with_scoped_session
     def read_all_urls(self, session=None):
         urls = session.query(Url).all()
-        urls = list(map(lambda url: {'my_key': url.my_key, 'long_url': url.long_url}, urls))
+        urls = [{'my_key': url.my_key, 'long_url': url.long_url} for url in urls]
         return list(urls)
 
     @with_scoped_session
@@ -73,29 +76,3 @@ class SqlAPI(DatabaseAPI):
     def delete_url(self, key, session=None):
         url_object = session.query(Url).get_or_404(key)
         session.delete(url_object)
-
-    @with_scoped_session
-    def bulk_generate_keys(self, n=10, session=None):
-        new_keys = []
-        for i in range(n):
-            new_keys.append(Key(my_key=self.generate_key()))
-
-        session.bulk_save_objects(new_keys)
-
-    @with_scoped_session
-    def insert_key(self, key, session=None):
-        new_key = Key(my_key=key, used=True)
-        session.add(new_key)
-        return new_key
-
-    @with_scoped_session
-    def consume_key(self, key, session=None):
-        if key is None:
-            new_key = session.query(Key).filter_by(used=False).first()
-        else:
-            new_key = self.insert_key(key)
-        if new_key is None:
-            self.bulk_generate_keys()
-            new_key = session.query(Key).filter_by(used=False).first()
-        new_key.used = True
-        return new_key.my_key

@@ -25,12 +25,3 @@ class InMemoryDB(DatabaseAPI):
         
     def delete_url(self, key):
         del self.db[key]
-
-    def bulk_generate_keys(self, n=10):
-        pass
-
-    def insert_key(self, key):
-        pass
-
-    def consume_key(self, key):
-        return self.generate_key()

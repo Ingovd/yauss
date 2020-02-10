@@ -1,12 +1,29 @@
-from random import choices
+from flask import current_app as app
 
 class DatabaseAPI:
     def __init__(self):
-        self._chars = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")
+        self.key_cache = set()
 
-    def generate_key(self, k=8):
-        return "".join(choices(self._chars, k=k))
-    
+    def consume_key(self, key):
+        if key is None:
+            return self.get_cached_key()
+        elif app.key_api.approve_key(key):
+            return key
+        raise Exception(f"Could not consume key: {key}")
+
+    def get_cached_key(self):
+        key = None
+        while key is None:
+            try:
+                key = self.key_cache.pop()
+                return key
+            except KeyError:
+                self.refill_key_cache()
+
+    def refill_key_cache(self):
+        keys = app.key_api.request_keys(3)
+        self.key_cache.update(keys)
+
     def create_url(self, long_url, key=None):
         raise NotImplementedError
 
@@ -20,13 +37,4 @@ class DatabaseAPI:
         raise NotImplementedError
         
     def delete_url(self, key):
-        raise NotImplementedError
-
-    def bulk_generate_keys(self, n=10):
-        raise NotImplementedError
-
-    def insert_key(self, key):
-        raise NotImplementedError
-
-    def consume_key(self, key):
         raise NotImplementedError

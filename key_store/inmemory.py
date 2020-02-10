@@ -1,10 +1,9 @@
 from .api import KeyAPI
-from flask import abort
 
 class InMemoryKeys(KeyAPI):
-    def __init__(self, data):
+    def __init__(self, keys):
         super().__init__()
-        self.keys = data.keys
+        self.keys = keys
 
     def request_keys(self, n):
         keys = []
