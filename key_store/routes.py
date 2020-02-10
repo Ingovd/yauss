@@ -11,5 +11,6 @@ def handle_request_keys(n):
 
 @key_store_routes.route('/approve/<key>')
 def approve_key(key):
+    print(f"Approving key: {key}")
     approved = app.key_store.approve_key(key)
     return jsonify({'approved': approved})

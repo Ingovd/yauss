@@ -3,7 +3,6 @@ from .api import DatabaseAPI
 class MongoAPI(DatabaseAPI):
     def __init__(self, mongo):
         super().__init__()
-        self.mongo = mongo
         self.db = mongo.db
 
     def create_url(self, long_url, key=None):

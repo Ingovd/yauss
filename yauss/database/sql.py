@@ -1,8 +1,6 @@
 from contextlib import contextmanager
 
-from flask import current_app as app
-
-from sqlalchemy import String, Boolean, Column
+from sqlalchemy import String, Column
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -17,14 +15,6 @@ class Url(Base):
 
     def __repr__(self):
         return f"<url {self.my_key}={self.long_url}>"
-
-class Key(Base):
-    __tablename__ = 'keys'
-    my_key = Column(String(8), primary_key=True)
-    used = Column(Boolean(), default=False)
-
-    def __repr__(self):
-        return f"<key {self.my_key}={self.used}>"
 
 @contextmanager
 def scoped_session(db):
