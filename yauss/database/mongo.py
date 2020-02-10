@@ -18,7 +18,8 @@ class MongoAPI(DatabaseAPI):
         return list(urls)
 
     def update_url(self, key, long_url):
-        self.db.urls.update_one({'my_key': key}, {'$set': {'long_url': long_url}})
+        self.db.urls.update_one(
+            {'my_key': key}, {'$set': {'long_url': long_url}})
         
     def delete_url(self, key):
         url = self.db.urls.find_one_or_404({'my_key': key})

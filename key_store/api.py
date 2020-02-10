@@ -1,9 +1,10 @@
 from random import choices
 
-class KeyAPI():
-    def __init__(self):
-        self._chars = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")
+_chars = list(("abcdefghijklmnopqrstuvwxyz"
+               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+               "0123456789-_"))
 
+class KeyAPI():
     def request_keys(self, n):
         keys = []
         while len(keys) < n:
@@ -16,4 +17,4 @@ class KeyAPI():
         raise NotImplementedError
 
     def _generate_key(self, k=8):
-        return "".join(choices(self._chars, k=k))
+        return "".join(choices(_chars, k=k))

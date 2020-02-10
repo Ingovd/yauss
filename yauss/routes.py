@@ -36,5 +36,3 @@ def show_update_view(key):
 def show_index_view():
     urls = app.api.read_all_urls()
     return render_template('index.html', urls=urls)
-
-

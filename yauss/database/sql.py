@@ -48,21 +48,22 @@ class SqlAPI(DatabaseAPI):
 
     @with_scoped_session
     def read_url_or_404(self, key, session=None):
-        url_object = session.query(Url).get_or_404(key)
-        return {'my_key': url_object.my_key, 'long_url': url_object.long_url}
+        url = session.query(Url).get_or_404(key)
+        return {'my_key': url.my_key, 'long_url': url.long_url}
 
     @with_scoped_session
     def read_all_urls(self, session=None):
         urls = session.query(Url).all()
-        urls = [{'my_key': url.my_key, 'long_url': url.long_url} for url in urls]
+        urls = [{'my_key': url.my_key, 'long_url': url.long_url}
+                for url in urls]
         return list(urls)
 
     @with_scoped_session
     def update_url(self, key, long_url, session=None):
-        url_object = session.query(Url).get_or_404(key)
-        url_object.long_url = long_url
+        url = session.query(Url).get_or_404(key)
+        url.long_url = long_url
       
     @with_scoped_session  
     def delete_url(self, key, session=None):
-        url_object = session.query(Url).get_or_404(key)
-        session.delete(url_object)
+        url = session.query(Url).get_or_404(key)
+        session.delete(url)

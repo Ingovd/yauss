@@ -17,7 +17,8 @@ class InMemoryDB(DatabaseAPI):
             abort(404)
 
     def read_all_urls(self):
-        urls = [{'my_key': key, 'long_url': long_url} for key, long_url in self.urls.items()]
+        urls = [{'my_key': key, 'long_url': long_url}
+                for key, long_url in self.urls.items()]
         return list(urls)
 
     def update_url(self, key, long_url):

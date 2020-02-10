@@ -24,4 +24,3 @@ class GatewayKeys(KeyAPI):
             return json.loads(response.content)['approved']
         else:
             abort(response.status_code)
-        
