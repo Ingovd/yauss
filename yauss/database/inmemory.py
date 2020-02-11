@@ -1,13 +1,12 @@
 from .api import DatabaseAPI
 from flask import abort
 
-class InMemoryDB(DatabaseAPI):
-    def __init__(self, db):
-        super().__init__()
-        self.urls = db.table['urls']
+class InMemoryAPI(DatabaseAPI):
+    def __init__(self, app):
+        self.urls = {}
+        super().__init__(app)
 
-    def create_url(self, long_url, key=None):
-        key = self.consume_key(key)
+    def create_url(self, key, long_url):
         self.urls[key] = long_url
 
     def read_url_or_404(self, key):

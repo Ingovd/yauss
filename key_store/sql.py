@@ -15,13 +15,13 @@ class Key(Base):
         return f"<key {self.my_key}>"
 
 class SqlKeys(KeyAPI):
-    def __init__(self, sqldb):
+    def __init__(self, sql):
         super().__init__()
-        self.db = sqldb
-        Base.metadata.create_all(bind=self.db.engine)
+        Base.metadata.create_all(bind=sql.engine)
+        self.db = sql
 
     @with_scoped_session
-    def approve_key(self, key):
+    def approve_key(self, key, session=None):
         if session.query(Key).get(key):
             return False
         else:

@@ -1,5 +1,7 @@
 from contextlib import contextmanager
 
+from flask_sqlalchemy import SQLAlchemy
+
 from sqlalchemy import String, Column
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.ext.declarative import declarative_base
@@ -35,14 +37,15 @@ def with_scoped_session(func):
     return wrapper
 
 class SqlAPI(DatabaseAPI):
-    def __init__(self, sqldb):
-        super().__init__()
-        self.db = sqldb
+    def __init__(self, app):
+        sql = SQLAlchemy()
+        sql.init_app(app)
+        self.db = sql
         Base.metadata.create_all(bind=self.db.engine)
+        super().__init__(app)
 
     @with_scoped_session
-    def create_url(self, long_url, key=None, session=None):
-        key = self.consume_key(key)
+    def create_url(self, key, long_url, session=None):
         new_url = Url(my_key=key, long_url=long_url)
         session.add(new_url)
 
