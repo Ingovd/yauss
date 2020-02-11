@@ -1,6 +1,7 @@
 from .api import DatabaseAPI
 from flask import abort
 
+
 class InMemoryAPI(DatabaseAPI):
     def __init__(self, app):
         self.urls = {}
@@ -22,6 +23,6 @@ class InMemoryAPI(DatabaseAPI):
 
     def update_url(self, key, long_url):
         self.urls[key] = long_url
-        
+
     def delete_url(self, key):
         del self.urls[key]

@@ -3,6 +3,16 @@ from flask_caching import Cache
 
 from .key_handler import KeyHandler
 
+from .database.inmemory import InMemoryAPI
+from .database.sql import SqlAPI
+from .database.mongo import MongoAPI
+
+
+initialise_db_backend = {'mongo':    MongoAPI,
+                         'sql':      SqlAPI,
+                         'inmemory': InMemoryAPI}
+
+
 def create_app(instance_path=None):
     if instance_path:
         app = Flask(__name__, instance_path=instance_path)
@@ -17,10 +27,6 @@ def create_app(instance_path=None):
         init_routes(app)
     return app
 
-from .database.inmemory import InMemoryAPI
-from .database.sql import SqlAPI
-from .database.mongo import MongoAPI
-initialise_db_backend = {'mongo' : MongoAPI, 'sql' : SqlAPI, 'inmemory' : InMemoryAPI}
 
 def init_database(app):
     try:
@@ -28,15 +34,18 @@ def init_database(app):
     except KeyError:
         raise Exception("No valid database configured")
 
+
 def init_key_handler(app):
     if 'KEY_STORE_URI' not in app.config:
         local_key_store(app)
     app.key_handler = KeyHandler(app.config['KEY_STORE_URI'])
 
+
 def init_cache(app):
     cache = Cache()
     cache.init_app(app)
     app.cache = cache
+
 
 def init_routes(app):
     from yauss.routes import url_crud
@@ -47,10 +56,10 @@ def local_key_store(app):
     from key_store.inmemory import InMemoryKeys
     from key_store.sql import SqlKeys
     from key_store.mongo import MongoKeys
-    key_api    = {'mongo' : MongoKeys, 'sql' : SqlKeys,    'inmemory' : InMemoryKeys}
+    key_api = {'mongo': MongoKeys, 'sql': SqlKeys, 'inmemory': InMemoryKeys}
     app.key_store = key_api[app.config['DB_BACKEND']](app.db_api.db)
 
     from key_store.routes import key_store_routes
-    app.register_blueprint(key_store_routes, url_prefix ='/keys')
+    app.register_blueprint(key_store_routes, url_prefix='/keys')
 
     app.config['KEY_STORE_URI'] = f"http://{app.config['SERVER_NAME']}/keys"

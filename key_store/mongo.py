@@ -1,5 +1,6 @@
 from .api import KeyAPI
 
+
 class MongoKeys(KeyAPI):
     def __init__(self, mongo):
         super().__init__()

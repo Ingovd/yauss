@@ -4,6 +4,7 @@ from requests import get
 
 from flask import abort
 
+
 class KeyHandler():
     def __init__(self, address):
         super().__init__()

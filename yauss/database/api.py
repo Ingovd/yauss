@@ -1,5 +1,3 @@
-from flask import current_app as app
-
 class DatabaseAPI:
     def __init__(self, app):
         app.db_api = self
@@ -15,6 +13,6 @@ class DatabaseAPI:
 
     def update_url(self, key, long_url):
         raise NotImplementedError
-        
+
     def delete_url(self, key):
         raise NotImplementedError

@@ -1,5 +1,6 @@
 from .api import KeyAPI
 
+
 class InMemoryKeys(KeyAPI):
     def __init__(self, db):
         super().__init__()

@@ -8,7 +8,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from .api import DatabaseAPI
 
+
 Base = declarative_base()
+
 
 class Url(Base):
     __tablename__ = 'urls'
@@ -17,6 +19,7 @@ class Url(Base):
 
     def __repr__(self):
         return f"<url {self.my_key}={self.long_url}>"
+
 
 @contextmanager
 def scoped_session(db):
@@ -30,11 +33,13 @@ def scoped_session(db):
     finally:
         session.close()
 
+
 def with_scoped_session(func):
     def wrapper(self, *args, **kwargs):
         with scoped_session(self.db) as session:
             return func(self, *args, **dict(kwargs, session=session))
     return wrapper
+
 
 class SqlAPI(DatabaseAPI):
     def __init__(self, app):
@@ -65,8 +70,8 @@ class SqlAPI(DatabaseAPI):
     def update_url(self, key, long_url, session=None):
         url = session.query(Url).get_or_404(key)
         url.long_url = long_url
-      
-    @with_scoped_session  
+
+    @with_scoped_session
     def delete_url(self, key, session=None):
         url = session.query(Url).get_or_404(key)
         session.delete(url)

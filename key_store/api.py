@@ -1,8 +1,10 @@
 from random import choices
 
+
 _chars = list(("abcdefghijklmnopqrstuvwxyz"
                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                "0123456789-_"))
+
 
 class KeyAPI():
     def request_keys(self, n):

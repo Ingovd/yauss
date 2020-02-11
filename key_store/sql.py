@@ -5,7 +5,9 @@ from yauss.database.sql import with_scoped_session
 
 from .api import KeyAPI
 
+
 Base = declarative_base()
+
 
 class Key(Base):
     __tablename__ = 'keys'
@@ -13,6 +15,7 @@ class Key(Base):
 
     def __repr__(self):
         return f"<key {self.my_key}>"
+
 
 class SqlKeys(KeyAPI):
     def __init__(self, sql):
