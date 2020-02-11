@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_caching import Cache
 from flask_pymongo import PyMongo
 from flask_sqlalchemy import SQLAlchemy
 
@@ -10,6 +11,8 @@ from key_store.mongo import MongoKeys
 from .database.mongo import MongoAPI
 from .database.sql import SqlAPI
 from .database.inmemory import InMemoryDB
+
+cache = Cache()
 
 db = PyMongo()
 Api = MongoAPI
@@ -26,10 +29,15 @@ KeyApi = MongoKeys
 
 def create_app():
     app = Flask(__name__)
+    app.config['CACHE_TYPE'] = 'simple'
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 86400
     app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/testdb'
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///..\\instance\\test.db'
 
     with app.app_context():
+        cache.init_app(app)
+        app.cache = cache
+
         db.init_app(app)
         app.api = Api(db)
 

@@ -12,6 +12,7 @@ def handle_create_url():
     return redirect('/')
 
 @url_crud.route('/<key>')
+@app.cache.cached()
 def handle_read_url(key):
     url = app.api.read_url_or_404(key)
     return redirect("http://" +  url['long_url'])
