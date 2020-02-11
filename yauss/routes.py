@@ -10,7 +10,7 @@ url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
 @url_crud.route('/', methods=['POST'])
 def handle_create_url():
-    key = app.key_handler.consume_key()
+    key = app.key_gateway.consume_key()
     long_url = request.form['long_url']
     app.db_api.create_url(key, long_url)
     return redirect('/')

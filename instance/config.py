@@ -29,3 +29,4 @@ MONGO_URI = 'mongodb://127.0.0.1:27017/urldb'
 # flask_caching configuration
 CACHE_TYPE = 'simple'
 CACHE_DEFAULT_TIMEOUT = 86400
+CACHE_KEY_REFILL = 10

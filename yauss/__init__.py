@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_caching import Cache
 
-from .key_handler import KeyHandler
+from .key_gateway import KeyGateway
 
 from .database.inmemory import InMemoryAPI
 from .database.sql import SqlAPI
@@ -22,7 +22,7 @@ def create_app(instance_path=None):
 
     with app.app_context():
         init_database(app)
-        init_key_handler(app)
+        init_key_gateway(app)
         init_cache(app)
         init_routes(app)
     return app
@@ -35,10 +35,11 @@ def init_database(app):
         raise Exception("No valid database configured")
 
 
-def init_key_handler(app):
+def init_key_gateway(app):
     if 'KEY_STORE_URI' not in app.config:
         local_key_store(app)
-    app.key_handler = KeyHandler(app.config['KEY_STORE_URI'])
+    app.key_gateway = KeyGateway(app.config['KEY_STORE_URI'],
+                                 app.config['CACHE_KEY_REFILL'])
 
 
 def init_cache(app):
