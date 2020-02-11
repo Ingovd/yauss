@@ -1,9 +1,10 @@
-This is a basic CRUD application.
+# Yet Another URL Shorting Service. #
 
-Here I will tell you how to set up the application.
+This is my attempt at creating a scalable url shorting service.
 
-Step 1, run pip.
+## Setup ##
 
-Step 2, make the db.
-
-Step 3, run the app.
+1. Clone repo and optionally set up a virtual environment using python's virtualenv
+2. Run `pip install requirements.txt`
+3. Edit `instance/config.py` to your liking
+4. Run `python wsgi.py`
