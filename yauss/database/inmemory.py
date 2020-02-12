@@ -1,11 +1,18 @@
 from .api import DatabaseAPI
 from flask import abort
 
+class InMemoryDB():
+    def __init__(self, urldict={}, keyset=set()):
+        self.urls = urldict
+        self.keys = keyset
+    
+    def init_app(app):
+        pass
 
 class InMemoryAPI(DatabaseAPI):
-    def __init__(self, app):
-        self.urls = {}
-        super().__init__(app)
+    def __init__(self, memdb):
+        super().__init__(memdb)
+        self.urls = memdb.urls
 
     def create_url(self, key, long_url):
         self.urls[key] = long_url

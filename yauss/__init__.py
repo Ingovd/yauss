@@ -1,16 +1,21 @@
 from flask import Flask
 from flask_caching import Cache
+from flask_pymongo import PyMongo
+from flask_sqlalchemy import SQLAlchemy
 
 from .key_gateway import KeyGateway
 
-from .database.inmemory import InMemoryAPI
+from .database.inmemory import InMemoryAPI, InMemoryDB
 from .database.sql import SqlAPI
 from .database.mongo import MongoAPI
 
 
-initialise_db_backend = {'mongo':    MongoAPI,
-                         'sql':      SqlAPI,
-                         'inmemory': InMemoryAPI}
+db_backends = {'mongo':    PyMongo,
+               'sql':      SQLAlchemy,
+               'inmemory': InMemoryDB}
+db_apis = {'mongo':    MongoAPI,
+           'sql':      SqlAPI,
+           'inmemory': InMemoryAPI}
 
 
 def create_app(instance_path=None):
@@ -30,9 +35,14 @@ def create_app(instance_path=None):
 
 def init_database(app):
     try:
-        initialise_db_backend[app.config['DB_BACKEND']](app)
+        config_db = app.config['DB_BACKEND']
     except KeyError:
         raise Exception("No valid database configured")
+    db_backend = db_backends[config_db]()
+    app.db_backend = db_backend
+    db_backend.init_app(app)
+    db_api = db_apis[config_db](db_backend)
+    app.db_api = db_api
 
 
 def init_key_gateway(app):
@@ -58,7 +68,7 @@ def local_key_store(app):
     from key_store.sql import SqlKeys
     from key_store.mongo import MongoKeys
     key_api = {'mongo': MongoKeys, 'sql': SqlKeys, 'inmemory': InMemoryKeys}
-    app.key_store = key_api[app.config['DB_BACKEND']](app.db_api.db)
+    app.key_store = key_api[app.config['DB_BACKEND']](app.db_api.db_backend)
 
     from key_store.routes import key_store_routes
     app.register_blueprint(key_store_routes, url_prefix='/keys')

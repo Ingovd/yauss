@@ -1,14 +1,10 @@
-from flask_pymongo import PyMongo
-
 from .api import DatabaseAPI
 
 
 class MongoAPI(DatabaseAPI):
-    def __init__(self, app):
-        self.db = PyMongo()
-        self.db.init_app(app)
-        super().__init__(app)
-        self.urls = self.db.db.urls
+    def __init__(self, mongodb):
+        super().__init__(mongodb)
+        self.urls = mongodb.db.urls
 
     def create_url(self, key, long_url):
         self.urls.insert_one({'my_key': key, 'long_url': long_url})

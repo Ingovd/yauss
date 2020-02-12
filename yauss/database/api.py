@@ -1,6 +1,6 @@
 class DatabaseAPI:
-    def __init__(self, app):
-        app.db_api = self
+    def __init__(self, db_backend):
+        self.db_backend = db_backend
 
     def create_url(self, key, long_url):
         raise NotImplementedError
