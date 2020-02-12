@@ -9,13 +9,11 @@ DB_BACKEND = 'inmemory'
 # Setup SQLite database URI OS agnostic
 
 # Will set SQLALCHEMY_DATABASE_URI to 'dialect:///relative/path/to/database.db'
-relative_url_db = ['..', 'instance', 'url.db']
-SQLALCHEMY_DATABASE_URI = os.path.join(f"sqlite:///", *relative_url_db)
+SQLALCHEMY_DATABASE_URI = os.path.join(f"sqlite:///", '..', 'instance', 'url.db')
 
 # Key store database if no external key store is used
-relative_key_db = ['..', 'instance', 'key.db']
 SQLALCHEMY_BINDS = {
-  'key_store' :  os.path.join(f"sqlite:///", *relative_key_db)
+  'key_store' :  os.path.join(f"sqlite:///", '..', 'instance', 'key.db')
 }
 
 
