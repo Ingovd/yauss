@@ -1,5 +1,8 @@
 .vscode/
 env/
 __pycache__/
+instance/key_store/
+instance/test_instance/
+
 
 *.db
