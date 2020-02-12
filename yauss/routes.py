@@ -2,6 +2,8 @@ from flask import (Blueprint,
                    render_template,
                    request,
                    redirect,
+                   flash,
+                   Markup,
                    current_app as app)
 
 
@@ -10,9 +12,26 @@ url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
 @url_crud.route('/', methods=['POST'])
 def handle_create_url():
-    key = app.key_gateway.consume_key()
-    long_url = request.form['long_url']
-    app.db_api.create_url(key, long_url)
+    try:
+        long_url = request.form['long_url']
+    except KeyError:
+        flash('Please specify a valid url to be shortened.')
+        return redirect('/')
+    try:
+        key = app.key_gateway.consume_key()
+    except TimeoutError:
+        flash('Could not acquire a unique key for your url. Please try again later.')
+        return redirect('/')
+    except ValueError:
+        flash('Your key is already in use. Please try a different custom key.')
+        return redirect('/')
+    short = f"{app.config['SERVER_NAME']}/{key}"
+    try:
+        app.db_api.create_url(key, long_url)
+        flash(Markup(f"Successfully added your url. Here is your link <a href='http://{short}'>{short}</a>"))
+    except Exception:
+        flash('Encountered an error while adding your url to the database. Please try again later.')
+        redirect('/')
     return redirect('/')
 
 
