@@ -1,7 +1,5 @@
 import os
 
-# Set server name and port
-SERVER_NAME = 'localhost:5000'
 
 # Supports: inmemory, sql, mongo
 DB_BACKEND = 'mongo'
