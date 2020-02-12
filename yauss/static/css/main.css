@@ -6,6 +6,8 @@
     left:50%;
     margin-right:50%;
     transform: translate(-50%, 0);
+    min-width: 30em;
+    text-align: center;
 }
 
 body {
