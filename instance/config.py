@@ -4,7 +4,7 @@ import os
 SERVER_NAME = 'localhost:5000'
 
 # Supports: inmemory, sql, mongo
-DB_BACKEND = 'mongo'
+DB_BACKEND = 'inmemory'
 
 # Setup SQLite database URI OS agnostic
 

@@ -6,7 +6,7 @@ class InMemoryDB():
         self.urls = urldict
         self.keys = keyset
     
-    def init_app(app):
+    def init_app(self, app):
         pass
 
 class InMemoryAPI(DatabaseAPI):
