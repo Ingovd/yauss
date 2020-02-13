@@ -67,11 +67,11 @@ def init_routes(app):
 
 
 def local_key_store(app):
+    from key_store import key_apis
     from key_store.inmemory import InMemoryKeys
     from key_store.sql import SqlKeys
     from key_store.mongo import MongoKeys
-    key_api = {'mongo': MongoKeys, 'sql': SqlKeys, 'inmemory': InMemoryKeys}
-    app.key_store = key_api[app.config['DB_BACKEND']](app.db_api.db_backend)
+    app.key_api = key_apis[app.config['DB_BACKEND']](app.db_api.db_backend)
 
     from key_store.routes import key_store_routes
     app.register_blueprint(key_store_routes, url_prefix='/keys')

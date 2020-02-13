@@ -14,9 +14,9 @@ from .mongo import MongoKeys
 db_backends = {'mongo':    PyMongo,
                'sql':      SQLAlchemy,
                'inmemory': InMemoryDB}
-db_apis = {'mongo':    MongoKeys,
-           'sql':      SqlKeys,
-           'inmemory': InMemoryKeys}
+key_apis = {'mongo':    MongoKeys,
+            'sql':      SqlKeys,
+            'inmemory': InMemoryKeys}
 
 
 def create_app(instance_path=None):
@@ -41,8 +41,8 @@ def init_database(app):
     db_backend = db_backends[config_db]()
     app.db_backend = db_backend
     db_backend.init_app(app)
-    db_api = db_apis[config_db](db_backend)
-    app.db_api = db_api
+    key_api = key_apis[config_db](db_backend)
+    app.key_api = key_api
 
 
 def init_routes(app):
