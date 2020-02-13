@@ -76,4 +76,4 @@ def local_key_store(app):
     from key_store.routes import key_store_routes
     app.register_blueprint(key_store_routes, url_prefix='/keys')
 
-    app.config['KEY_STORE_URI'] = f"http://{app.config['SERVER_NAME']}/keys"
+    app.config['KEY_STORE_URI'] = "localhost/keys"
