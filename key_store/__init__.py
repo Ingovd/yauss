@@ -24,7 +24,7 @@ def create_app(instance_path=None):
         app = Flask(__name__, instance_path=instance_path)
     else:
         app = Flask(__name__, instance_relative_config=True)
-    print(f"Created Flask application in folder: {app.instance_path}")
+    app.logger.info(f"Created Flask application in folder: {app.instance_path}")
     app.config.from_pyfile(os.path.join(app.instance_path, 'config.py'))
 
     with app.app_context():

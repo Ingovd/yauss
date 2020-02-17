@@ -1,4 +1,4 @@
-from .api import DatabaseAPI
+from .api import *
 
 
 class MongoAPI(DatabaseAPI):
@@ -6,21 +6,21 @@ class MongoAPI(DatabaseAPI):
         super().__init__(mongodb)
         self.urls = mongodb.db.urls
 
-    def create_url(self, key, long_url):
+    def insert_url(self, key, long_url):
         self.urls.insert_one({'my_key': key, 'long_url': long_url})
 
-    def read_url_or_404(self, key):
-        url_object = self.urls.find_one_or_404({'my_key': key})
-        return url_object
+    def read_url(self, key):
+        if url := self.urls.find_one({'my_key': key}):
+            return url['long_url']
 
     def read_all_urls(self):
-        urls = self.urls.find()
-        return list(urls)
+        return [KeyUrl(url['my_key'], url['long_url'])
+                for url in self.urls.find()]
 
     def update_url(self, key, long_url):
         self.urls.update_one(
             {'my_key': key}, {'$set': {'long_url': long_url}})
 
     def delete_url(self, key):
-        url = self.urls.find_one_or_404({'my_key': key})
-        self.urls.delete_one(url)
+        if url := self.urls.find_one({'my_key': key}):
+            self.urls.delete_one(url)

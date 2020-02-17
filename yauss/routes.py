@@ -2,6 +2,7 @@ from flask import (Blueprint,
                    render_template,
                    request,
                    redirect,
+                   abort,
                    flash,
                    Markup,
                    current_app as app)
@@ -34,15 +35,18 @@ def handle_create_url():
 
 
 @url_crud.route('/<key>')
-@app.cache.cached()
 def handle_read_url(key):
-    url = app.db_api.read_url_or_404(key)
-    return redirect("http://" + url['long_url'])
+    if response := app.cache.get(key):
+        return response
+    if url := app.db_api.read_url(key):
+        response = redirect(url)
+        app.cache.set(key, response)
+        return response
+    abort(404)
 
 
 @url_crud.route('/update/<key>', methods=['POST'])
 def handle_update_url(key):
-    print(request.form['long_url'])
     app.db_api.update_url(key, request.form['long_url'])
     return redirect('/')
 
@@ -55,8 +59,9 @@ def handle_delete_url(key):
 
 @url_crud.route('/update/<key>', methods=['GET'])
 def show_update_view(key):
-    url = app.db_api.read_url_or_404(key)
-    return render_template('update.html', url=url)
+    if url := app.db_api.read_url(key):
+        return render_template('update.html', key=key, url=url)
+    abort(404)
 
 
 @url_crud.route('/', methods=['GET'])

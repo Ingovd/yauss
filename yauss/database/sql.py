@@ -4,7 +4,7 @@ from sqlalchemy import String, Column
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.ext.declarative import declarative_base
 
-from .api import DatabaseAPI
+from .api import *
 
 
 Base = declarative_base()
@@ -46,28 +46,27 @@ class SqlAPI(DatabaseAPI):
         Base.metadata.create_all(bind=self.db.engine)
 
     @with_scoped_session
-    def create_url(self, key, long_url, session=None):
+    def insert_url(self, key: str, long_url: str, session=None) -> None:
         new_url = Url(my_key=key, long_url=long_url)
         session.add(new_url)
 
     @with_scoped_session
-    def read_url_or_404(self, key, session=None):
-        url = session.query(Url).get_or_404(key)
-        return {'my_key': url.my_key, 'long_url': url.long_url}
+    def read_url(self, key: str, session=None) -> Optional[str]:
+        if url := session.query(Url).get(key):
+            return url.long_url
+        return None
 
     @with_scoped_session
     def read_all_urls(self, session=None):
-        urls = session.query(Url).all()
-        urls = [{'my_key': url.my_key, 'long_url': url.long_url}
+        return [KeyUrl(url.my_key, url.long_url)
                 for url in urls]
-        return list(urls)
 
     @with_scoped_session
-    def update_url(self, key, long_url, session=None):
-        url = session.query(Url).get_or_404(key)
-        url.long_url = long_url
+    def update_url(self, key: str, long_url: str, session=None) -> None:
+        if url := session.query(Url).get(key):
+            url.long_url = long_url
 
     @with_scoped_session
     def delete_url(self, key, session=None):
-        url = session.query(Url).get_or_404(key)
-        session.delete(url)
+        if url := session.query(Url).get(key):
+            session.delete(url)

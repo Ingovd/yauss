@@ -1,4 +1,4 @@
-from .api import DatabaseAPI
+from .api import *
 from flask import abort
 
 class InMemoryDB():
@@ -14,22 +14,18 @@ class InMemoryAPI(DatabaseAPI):
         super().__init__(memdb)
         self.urls = memdb.urls
 
-    def create_url(self, key, long_url):
+    def insert_url(self, key: str, long_url: str) -> None:
         self.urls[key] = long_url
 
-    def read_url_or_404(self, key):
-        try:
-            return {'my_key': key, 'long_url': self.urls[key]}
-        except KeyError:
-            abort(404)
+    def read_url(self, key: str) -> Optional[str]:
+        return self.urls.get(key)
 
-    def read_all_urls(self):
-        urls = [{'my_key': key, 'long_url': long_url}
+    def read_all_urls(self) -> List[KeyUrl]:
+        return [KeyUrl(key, long_url)
                 for key, long_url in self.urls.items()]
-        return list(urls)
 
-    def update_url(self, key, long_url):
+    def update_url(self, key: str, long_url: str) -> None:
         self.urls[key] = long_url
 
-    def delete_url(self, key):
+    def delete_url(self, key: str) -> None:
         del self.urls[key]

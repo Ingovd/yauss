@@ -20,12 +20,12 @@
         </tr>
         {% for url in urls %}
             <tr>
-                <td>{{ url['my_key'] }}</td>   
-                <td>{{ url['long_url'] }}</td>
+                <td>{{ url.key }}</td>   
+                <td>{{ url.url }}</td>
                 <td>
-                    <a href="/delete/{{ url['my_key'] }}">Delete</a>
+                    <a href="/delete/{{ url.key }}">Delete</a>
                     <br>
-                    <a href="/update/{{ url['my_key'] }}">Update</a>
+                    <a href="/update/{{ url.key }}">Update</a>
                 </td>
             </tr>
         {% endfor %}

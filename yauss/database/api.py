@@ -1,18 +1,54 @@
-class DatabaseAPI:
+from typing import Optional, List
+from collections import namedtuple
+from collections.abc import MutableMapping
+from urllib.parse import urlparse
+
+KeyUrl = namedtuple('KeyUrl', ['key', 'url'])
+
+class DatabaseAPI(MutableMapping):
     def __init__(self, db_backend):
         self.db_backend = db_backend
 
-    def create_url(self, key, long_url):
+    def format_url(self, long_url: str) -> Optional[str]:
+        parsed_url = urlparse(long_url)
+        if not parsed_url.scheme:
+            parsed_url = urlparse(f"http://{long_url}")
+        if parsed_url.netloc:
+            return parsed_url.geturl()
+        return None
+
+    def create_url(self, key: str, long_url: str) -> None:
+        if long_url := self.format_url(long_url):
+            self.insert_url(key, long_url)
+        else:
+            raise ValueError("Invalid URL.")
+
+    def insert_url(self, key: str, long_url: str) -> None:
         raise NotImplementedError
 
-    def read_url_or_404(self, key):
+    def read_url(self, key: str) -> Optional[str]:
         raise NotImplementedError
 
-    def read_all_urls(self):
+    def read_all_urls(self) -> List[KeyUrl]:
         raise NotImplementedError
 
-    def update_url(self, key, long_url):
+    def update_url(self, key: str, long_url: str) -> None:
         raise NotImplementedError
 
-    def delete_url(self, key):
+    def delete_url(self, key: str) -> None:
+        raise NotImplementedError
+
+    def __getitem__(self, key):
+        return self.read_url(key)
+
+    def __setitem__(self, key, val):
+        self.create_url(key, val)
+
+    def __delitem__(self, key):
+        self.delete_url(key)
+
+    def __len__(self):
+        raise NotImplementedError
+
+    def __iter__(self):
         raise NotImplementedError

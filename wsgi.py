@@ -20,10 +20,12 @@ def main():
     args = parser.parse_args()
     path = setup_instance_path(args.path)
 
+    config = {'INSTANCE_PATH': path}
+
     if args.key:
-        app = create_key_store(instance_path=path)
+        app = create_key_store(config)
     else:
-        app = create_yauss(instance_path=path)
+        app = create_yauss(config)
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
 
