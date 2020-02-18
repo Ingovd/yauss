@@ -7,8 +7,8 @@ class MongoKeys(KeyAPI):
         self.keys = mongodb.db.keys
 
     def approve_key(self, key):
-        if self.keys.find_one({'my_key': key}):
+        if self.keys.find_one({'key': key}):
             return False
         else:
-            self.keys.insert_one({'my_key': key})
+            self.keys.insert_one({'key': key})
             return True

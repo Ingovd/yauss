@@ -12,11 +12,11 @@ Base = declarative_base()
 
 class Url(Base):
     __tablename__ = 'urls'
-    my_key = Column(String(8), primary_key=True)
+    key = Column(String(8), primary_key=True)
     long_url = Column(String(), nullable=False)
 
     def __repr__(self):
-        return f"<url {self.my_key}={self.long_url}>"
+        return f"<url {self.key}={self.long_url}>"
 
 
 @contextmanager
@@ -39,7 +39,7 @@ def with_scoped_session(func):
     return wrapper
 
 
-class SqlAPI(DatabaseAPI):
+class SqlUrls(UrlAPI):
     def __init__(self, sqldb):
         super().__init__(sqldb)
         self.db = sqldb
@@ -47,7 +47,7 @@ class SqlAPI(DatabaseAPI):
 
     @with_scoped_session
     def insert_url(self, key: str, long_url: str, session=None) -> None:
-        new_url = Url(my_key=key, long_url=long_url)
+        new_url = Url(key=key, long_url=long_url)
         session.add(new_url)
 
     @with_scoped_session
@@ -58,8 +58,8 @@ class SqlAPI(DatabaseAPI):
 
     @with_scoped_session
     def read_all_urls(self, session=None):
-        return [KeyUrl(url.my_key, url.long_url)
-                for url in urls]
+        return [KeyUrl(url.key, url.long_url)
+                for url in session.query(Url).all()]
 
     @with_scoped_session
     def update_url(self, key: str, long_url: str, session=None) -> None:
@@ -67,6 +67,10 @@ class SqlAPI(DatabaseAPI):
             url.long_url = long_url
 
     @with_scoped_session
-    def delete_url(self, key, session=None):
+    def delete_url(self, key: str, session=None) -> None:
         if url := session.query(Url).get(key):
             session.delete(url)
+
+    @with_scoped_session
+    def count(self) -> int:
+        return session.query(Url).count()

@@ -9,7 +9,7 @@ class InMemoryDB():
     def init_app(self, app):
         pass
 
-class InMemoryAPI(DatabaseAPI):
+class InMemoryUrls(UrlAPI):
     def __init__(self, memdb):
         super().__init__(memdb)
         self.urls = memdb.urls
@@ -29,3 +29,6 @@ class InMemoryAPI(DatabaseAPI):
 
     def delete_url(self, key: str) -> None:
         del self.urls[key]
+    
+    def count(self) -> int:
+        return self.urls.count

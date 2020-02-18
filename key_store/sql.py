@@ -31,10 +31,10 @@ def with_scoped_session(func):
 
 class Key(Base):
     __tablename__ = 'keys'
-    my_key = Column(String(8), primary_key=True)
+    key = Column(String(8), primary_key=True)
 
     def __repr__(self):
-        return f"<key {self.my_key}>"
+        return f"<key {self.key}>"
 
 
 class SqlKeys(KeyAPI):
@@ -48,5 +48,5 @@ class SqlKeys(KeyAPI):
         if session.query(Key).get(key):
             return False
         else:
-            session.add(Key(my_key=key))
+            session.add(Key(key=key))
             return True

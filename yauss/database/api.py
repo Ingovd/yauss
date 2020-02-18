@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 KeyUrl = namedtuple('KeyUrl', ['key', 'url'])
 
-class DatabaseAPI(MutableMapping):
+class UrlAPI(MutableMapping):
     def __init__(self, db_backend):
         self.db_backend = db_backend
 
@@ -38,17 +38,23 @@ class DatabaseAPI(MutableMapping):
     def delete_url(self, key: str) -> None:
         raise NotImplementedError
 
+    def count(self) -> int:
+        raise NotImplementedError
+
     def __getitem__(self, key):
         return self.read_url(key)
 
     def __setitem__(self, key, val):
-        self.create_url(key, val)
+        if self[key]:
+            return self.update_url(key, val)
+        else:
+            return self.create_url(key, val)
 
     def __delitem__(self, key):
-        self.delete_url(key)
-
-    def __len__(self):
-        raise NotImplementedError
+        return self.delete_url(key)
 
     def __iter__(self):
-        raise NotImplementedError
+        yield from self.read_all_urls()
+
+    def __len__(self):
+        return self.count()

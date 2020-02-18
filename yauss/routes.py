@@ -17,7 +17,7 @@ def handle_create_url():
         long_url = request.form['long_url']
         key = app.key_gateway.consume_key()
         short = f"{app.config['SERVER_NAME']}/{key}"
-        app.db_api.create_url(key, long_url)
+        app.urls[key] = long_url
     except KeyError:
         flash('pPlease specify a valid url to be shortened')
     except ValueError:
@@ -38,7 +38,7 @@ def handle_create_url():
 def handle_read_url(key):
     if response := app.cache.get(key):
         return response
-    if url := app.db_api.read_url(key):
+    if url := app.urls[key]:
         response = redirect(url)
         app.cache.set(key, response)
         return response
@@ -47,24 +47,26 @@ def handle_read_url(key):
 
 @url_crud.route('/update/<key>', methods=['POST'])
 def handle_update_url(key):
-    app.db_api.update_url(key, request.form['long_url'])
-    return redirect('/')
+    if app.urls[key]:
+        app.urls.update_url(key. request.form['long_url'])
+        return redirect('/')
+    abort(404)
 
 
 @url_crud.route('/delete/<key>')
 def handle_delete_url(key):
-    app.db_api.delete_url(key)
+    del app.urls[key]
     return redirect('/')
 
 
 @url_crud.route('/update/<key>', methods=['GET'])
 def show_update_view(key):
-    if url := app.db_api.read_url(key):
+    if url := app.urls[key]:
         return render_template('update.html', key=key, url=url)
     abort(404)
 
 
 @url_crud.route('/', methods=['GET'])
 def show_index_view():
-    urls = app.db_api.read_all_urls()
+    urls = list(app.urls)
     return render_template('index.html', urls=urls)
