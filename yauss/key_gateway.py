@@ -42,6 +42,7 @@ class KeyGateway():
         if keys := self._request_keys(self.refill):
             self.key_cache.update(keys[1:])
             return keys[0]
+        raise KeyStoreError("Received zero keys from store")
         
 
     def consume_key(self, key=None):
