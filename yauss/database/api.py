@@ -9,20 +9,22 @@ from urllib.parse import urlparse
 KeyUrl = namedtuple('KeyUrl', ['key', 'url'])
 
 
+def format_url(long_url: str) -> Optional[str]:
+    parsed_url = urlparse(long_url)
+    if not parsed_url.scheme:
+        parsed_url = urlparse(f"http://{long_url}")
+    if parsed_url.netloc:
+        return parsed_url.geturl()
+    return None
+
+
 class UrlAPI(MutableMapping):
     def __init__(self, db_backend):
         self.db_backend = db_backend
 
-    def format_url(self, long_url: str) -> Optional[str]:
-        parsed_url = urlparse(long_url)
-        if not parsed_url.scheme:
-            parsed_url = urlparse(f"http://{long_url}")
-        if parsed_url.netloc:
-            return parsed_url.geturl()
-        return None
-
     def create_url(self, key: str, long_url: str) -> None:
-        if long_url := self.format_url(long_url):
+        print(f"Adding {long_url} with key {key}")
+        if long_url := format_url(long_url):
             self.insert_url(key, long_url)
         else:
             raise ValueError("Invalid URL.")
@@ -49,7 +51,9 @@ class UrlAPI(MutableMapping):
         return self.read_url(key)
 
     def __setitem__(self, key, val):
+        print(f"Trying to set {key} to {val}")
         if self[key]:
+            print(f"Found key {key} as {self[key]}")
             return self.update_url(key, val)
         else:
             return self.create_url(key, val)

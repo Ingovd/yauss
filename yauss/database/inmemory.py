@@ -30,4 +30,4 @@ class InMemoryUrls(UrlAPI):
         del self.urls[key]
     
     def count(self) -> int:
-        return self.urls.count
+        return len(self.urls)

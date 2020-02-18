@@ -43,9 +43,13 @@ def handle_read_url(key):
         app.logger.warning(APP_CACHE_1ERR.format(err))
     if url := app.urls[key]:
         response = redirect(url)
+    else:
+        abort(404)
+    try:
         app.cache.set(key, response)
-        return response
-    abort(404)
+    except Exception as err:
+        app.logger.warning(APP_CACHE_1ERR.format(err))
+    return response
 
 
 @url_crud.route('/update/<key>', methods=['POST'])
