@@ -11,25 +11,38 @@ from flask import (Blueprint,
 url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
 
+USR_INVALID_URL = 'Please specify a valid url to be shortened'
+USR_USED_KEY = 'Your key is already in use, lease try a different custom key'
+USR_UNEXPECTED = ('Unexpected error while handling your request, '
+                  'please try again later')
+USR_HTML_URL_ADD_1URL = Markup(
+                         ("Successfully added your url. "
+                          "Here is your link <a href='http://{0}'>{0}</a>")
+                        )
+
+APP_KEY_TIMOUT_1ERR = "Key store timed out during url creation: {}"
+APP_UNEXPECTED_1ERR = "Unexpected error when handling url creation: {}"
+
+
 @url_crud.route('/', methods=['POST'])
 def handle_create_url():
     try:
         long_url = request.form['long_url']
         key = app.key_gateway.consume_key()
-        short = f"{app.config['SERVER_NAME']}/{key}"
         app.urls[key] = long_url
     except KeyError:
-        flash('pPlease specify a valid url to be shortened')
+        flash(USR_INVALID_URL)
     except ValueError:
-        flash('Your key is already in use, lease try a different custom key')
+        flash(USR_USED_KEY)
     except TimeoutError as err:
-        app.logger.warning(f"Key store timed out during url creation: {err}")
-        flash('Unexpected error while handling your request, please try again later')
+        app.logger.warning(APP_KEY_TIMOUT_1ERR.format(err))
+        flash(USR_UNEXPECTED)
     except Exception as err:
-        app.logger.warning(f"Unexpected error when handling url creation: {err}")
-        flash('Unexpected error while handling your request, please try again later')
+        app.logger.warning(APP_UNEXPECTED_1ERR.format(err))
+        flash(USR_UNEXPECTED)
     else:
-        flash(Markup(f"Successfully added your url. Here is your link <a href='http://{short}'>{short}</a>"))
+        short = f"{app.config['SERVER_NAME']}/{key}"
+        flash(USR_HTML_URL_ADD_1URL.format(short))
     finally:
         return redirect('/')
 
