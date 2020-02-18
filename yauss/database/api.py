@@ -1,9 +1,13 @@
 from typing import Optional, List
+
 from collections import namedtuple
 from collections.abc import MutableMapping
+
 from urllib.parse import urlparse
 
+
 KeyUrl = namedtuple('KeyUrl', ['key', 'url'])
+
 
 class UrlAPI(MutableMapping):
     def __init__(self, db_backend):

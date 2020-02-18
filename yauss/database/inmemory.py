@@ -1,5 +1,4 @@
 from .api import *
-from flask import abort
 
 class InMemoryDB():
     def __init__(self, urldict={}, keyset=set()):

@@ -4,24 +4,13 @@ from flask import (Blueprint,
                    redirect,
                    abort,
                    flash,
-                   Markup,
                    current_app as app)
 
 
+from .templates.messages import *
+
+
 url_crud = Blueprint('url_crud', __name__, template_folder='templates')
-
-
-USR_INVALID_URL = 'Please specify a valid url to be shortened'
-USR_USED_KEY = 'Your key is already in use, lease try a different custom key'
-USR_UNEXPECTED = ('Unexpected error while handling your request, '
-                  'please try again later')
-USR_HTML_URL_ADD_1URL = Markup(
-                         ("Successfully added your url. "
-                          "Here is your link <a href='http://{0}'>{0}</a>")
-                        )
-
-APP_KEY_TIMOUT_1ERR = "Key store timed out during url creation: {}"
-APP_UNEXPECTED_1ERR = "Unexpected error when handling url creation: {}"
 
 
 @url_crud.route('/', methods=['POST'])
@@ -30,12 +19,10 @@ def handle_create_url():
         long_url = request.form['long_url']
         key = app.key_gateway.consume_key()
         app.urls[key] = long_url
-    except KeyError:
+    except (KeyError, ValueError):
         flash(USR_INVALID_URL)
-    except ValueError:
-        flash(USR_USED_KEY)
-    except TimeoutError as err:
-        app.logger.warning(APP_KEY_TIMOUT_1ERR.format(err))
+    except KeyStoreError as err:
+        app.logger.warning(APP_KEY_1ERR.format(err))
         flash(USR_UNEXPECTED)
     except Exception as err:
         app.logger.warning(APP_UNEXPECTED_1ERR.format(err))
@@ -49,8 +36,11 @@ def handle_create_url():
 
 @url_crud.route('/<key>')
 def handle_read_url(key):
-    if response := app.cache.get(key):
-        return response
+    try:
+        if response := app.cache.get(key):
+            return response
+    except Exception as err:
+        app.logger.warning(APP_CACHE_1ERR.format(err))
     if url := app.urls[key]:
         response = redirect(url)
         app.cache.set(key, response)
@@ -60,16 +50,25 @@ def handle_read_url(key):
 
 @url_crud.route('/update/<key>', methods=['POST'])
 def handle_update_url(key):
-    if app.urls[key]:
-        app.urls.update_url(key. request.form['long_url'])
+    try:
+        new_url = request.form['long_url']
+    except KeyError:
+        flash(USR_INVALID_URL)
+        return redirect(f"/update/{key}")
+    if url := app.urls[key]:
+        app.urls.update_url(key, new_url)
+        flash(USR_UPDATE_1URL_2URL.format(url, new_url))
         return redirect('/')
     abort(404)
 
 
 @url_crud.route('/delete/<key>')
 def handle_delete_url(key):
-    del app.urls[key]
-    return redirect('/')
+    if url := app.urls[key]:
+        del app.urls[key]
+        flash(USR_URL_DEL_1URL.format(url))
+        return redirect('/')
+    abort(404)
 
 
 @url_crud.route('/update/<key>', methods=['GET'])

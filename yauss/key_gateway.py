@@ -1,9 +1,11 @@
-import json
-
 from requests import get
 from requests.exceptions import ConnectionError
 
 from flask import abort
+
+
+class KeyStoreError(Exception):
+    pass
 
 
 class KeyGateway():
@@ -11,46 +13,43 @@ class KeyGateway():
         super().__init__()
         self.key_cache = set()
         self.address = address
-        self.cache_refill = cache_refill
+        self.refill = cache_refill
 
     def _request_keys(self, n):
         response = get(f"{self.address}/request/{n}")
         if response:
-            keys = json.loads(response.content)['keys']
+            return response.json()['keys']
         else:
-            abort(response.status_code)
-        if len(keys) > 0:
-            return keys
-        else:
-            abort(503)
+            msg = f"Requesting {n} keys response: {response.status_code}"
+            raise KeyStoreError(msg)
 
     def _approve_key(self, key):
         response = get(f"{self.address}/{key}")
         if response:
-            return json.loads(response.content)['approved']
+            return response.json()['approved']
         else:
-            abort(response.status_code)
+            msg = f"Approving {key} response: {response.status_code}"
+            raise KeyStoreError(msg)
 
-    def _get_cached_key(self):
-        key = None
-        while key is None:
-            try:
-                key = self.key_cache.pop()
-            except KeyError:
-                key = self._refill_key_cache()
+    def _get_key(self):
+        try:
+            key = self.key_cache.pop()
+        except KeyError:
+            key = self._get_remote_key()
         return key
 
-    def _refill_key_cache(self):
-        keys = self._request_keys(self.cache_refill)
-        self.key_cache.update(keys[1:])
-        return keys[0]
+    def _get_remote_key(self):
+        if keys := self._request_keys(self.refill):
+            self.key_cache.update(keys[1:])
+            return keys[0]
+        
 
     def consume_key(self, key=None):
         try:
             if key is None:
-                return self._get_cached_key()
+                return self._get_key()
             elif self._approve_key(key):
                 return key
-        except ConnectionError:
-            raise TimeoutError("Could not get a valid response from key store")
-        raise ValueError("Could not validate the key")
+        except ConnectionError as err:
+            raise KeyStoreError(err)
+        return None

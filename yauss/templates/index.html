@@ -37,13 +37,4 @@
     <input type="text" name="long_url" id="content" style="width: 50%;">
     <input type="submit" value="Add URL">
 </form>
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif%}
-{% endwith %}
 {% endblock %}
