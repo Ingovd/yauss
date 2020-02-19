@@ -23,7 +23,6 @@ class UrlAPI(MutableMapping):
         self.db_backend = db_backend
 
     def create_url(self, key: str, long_url: str) -> None:
-        print(f"Adding {long_url} with key {key}")
         if long_url := format_url(long_url):
             self.insert_url(key, long_url)
         else:
@@ -51,9 +50,7 @@ class UrlAPI(MutableMapping):
         return self.read_url(key)
 
     def __setitem__(self, key, val):
-        print(f"Trying to set {key} to {val}")
         if self[key]:
-            print(f"Found key {key} as {self[key]}")
             return self.update_url(key, val)
         else:
             return self.create_url(key, val)
