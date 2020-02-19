@@ -1,5 +1,6 @@
 from flask import Markup
 
+# Messages flashed to end user
 USR_INVALID_URL = 'Please specify a valid url to be shortened'
 USR_USED_KEY = 'Your key is already in use, please try a different custom key'
 USR_UNEXPECTED = ('Unexpected error while handling your request, '
@@ -11,6 +12,8 @@ USR_HTML_URL_ADD_1URL = Markup(
 USR_URL_DEL_1URL = "Successfully removed url: {}"
 USR_UPDATE_1URL_2URL = "Successfully updated {} to {}"
 
+# Messages for internal use
+APP_CREATED_FLASK_1PATH = "Created Flask application in folder: {}"
 APP_INVALID_DB = ("Invalid (or no) database configured, "
                   "running the service in memory (TESTING ONLY)")
 APP_DB_SETUP_1ERR = "Unexpected error when setting up database: {}"
