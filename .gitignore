@@ -1,8 +1,9 @@
 .vscode/
 env/
 __pycache__/
+htmlcov/
 instance/key_store/
 instance/test_instance/
 
-
+.coverage
 *.db

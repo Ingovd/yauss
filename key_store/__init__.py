@@ -4,7 +4,7 @@ from flask import Flask
 from flask_pymongo import PyMongo
 from flask_sqlalchemy import SQLAlchemy
 from yauss.database.inmemory import InMemoryDB
-
+from yauss.templates.messages import *
 
 from .inmemory import InMemoryKeys
 from .sql import SqlKeys

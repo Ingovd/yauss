@@ -15,9 +15,6 @@ class Url(Base):
     key = Column(String(8), primary_key=True)
     long_url = Column(String(), nullable=False)
 
-    def __repr__(self):
-        return f"<url {self.key}={self.long_url}>"
-
 
 @contextmanager
 def scoped_session(db):

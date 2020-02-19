@@ -33,9 +33,6 @@ class Key(Base):
     __tablename__ = 'keys'
     key = Column(String(8), primary_key=True)
 
-    def __repr__(self):
-        return f"<key {self.key}>"
-
 
 class SqlKeys(KeyAPI):
     def __init__(self, sqldb):

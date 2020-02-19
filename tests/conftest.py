@@ -14,14 +14,14 @@ class MockKey():
         return 'abcdefgh'
 
 
-@pytest.fixture(scope='class')
-def path():
+@pytest.fixture(params=['sql', 'inmemory'])
+def path(request):
     with tempfile.TemporaryDirectory(dir=os.path.join(os.getcwd(), 'tests')) as path:
-        config = ("TESTING=       True\n"
-                  "DB_BACKEND=    'inmemory'\n"
-                  "SERVER_NAME=   'localhost:5000'\n"
-                  "SECRET_KEY=    'sososecret'\n"
-                  "KEY_STORE_URI= 'mock'")
+        config = ( "TESTING=       True\n"
+                  f"DB_BACKEND=    '{request.param}'\n"
+                   "SERVER_NAME=   'localhost:5000'\n"
+                   "SECRET_KEY=    'sososecret'\n"
+                   "KEY_STORE_URI= 'mock'")
         with open(os.path.join(path, 'config.py'), "w") as configpy:
             configpy.write(config)
         yield path
@@ -32,7 +32,7 @@ def yauss(path):
     yauss = create_yauss({'INSTANCE_PATH': path})
     with yauss.app_context():
         yauss.key_gateway = MockKey()
-    return yauss
+        yield yauss
 
 
 @pytest.fixture
@@ -44,7 +44,4 @@ def yauss_client(yauss):
 def key_store(path):
     key_store = create_key_store({'INSTANCE_PATH': path})
     return key_store
-
-
-
 

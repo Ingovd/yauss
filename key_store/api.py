@@ -1,3 +1,4 @@
+import abc
 from random import choices
 
 
@@ -15,8 +16,9 @@ class KeyAPI():
                 keys.append(key)
         return keys
 
-    def approve_key(self, key):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def approve_key(self, key: str):
+        """ Check if key is present in the store """
 
-    def _generate_key(self, k=8):
+    def _generate_key(self, k: int=8):
         return "".join(choices(_chars, k=k))

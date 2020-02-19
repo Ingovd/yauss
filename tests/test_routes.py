@@ -27,6 +27,6 @@ def test_bad_url(yauss):
 def test_read_url(yauss):
     key = 'abcdefgh'
     url = '127.0.0.1'
-    yauss.db_backend.urls.update({key: url})
+    yauss.urls[key] = url
     response = yauss.test_client().get(f"/{key}")
     assert url.encode() in response.data
