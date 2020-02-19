@@ -5,8 +5,6 @@ from flask_caching import Cache
 from flask_pymongo import PyMongo
 from flask_sqlalchemy import SQLAlchemy
 
-from .templates.messages import *
-
 from .key_gateway import KeyGateway
 
 from .database.inmemory import InMemoryUrls, InMemoryDB
@@ -14,10 +12,12 @@ from .database.sql import SqlUrls
 from .database.mongo import MongoUrls
 
 
-db_default =         {'backend': InMemoryDB, 'api': InMemoryUrls}
-db_inits = {'mongo': {'backend': PyMongo,    'api': MongoUrls},
-            'sql':   {'backend': SQLAlchemy, 'api': SqlUrls},
-            'inmemory': db_default}
+db_backends = {'mongo':    PyMongo,
+               'sql':      SQLAlchemy,
+               'inmemory': InMemoryDB}
+url_apis = {'mongo':    MongoUrls,
+            'sql':      SqlUrls,
+            'inmemory': InMemoryUrls}
 
 
 def create_app(config={}):
@@ -38,15 +38,15 @@ def create_app(config={}):
 
 
 def init_database(app):
-    if not db_init = db_inits.get(app.config.get('DB_BACKEND')):
-        app.logger.warning(APP_INVALID_DB)
-        db_init = db_default
     try:
-        db_backend = db_init['backend']()
+        config_db = app.config['DB_BACKEND']
+        db_backend = db_backends[config_db]()
         db_backend.init_app(app)
-        url_api = db_init['api'](db_backend)
+        url_api = url_apis[config_db](db_backend)
+    except KeyError:
+        raise Exception("No valid database configured")
     except Exception as err:
-        app.logger.critical(APP_DB_SETUP_1ERR.format(err))
+        app.logger.critical("Could not configure database.")
         raise err
     app.db_backend = db_backend
     app.urls = url_api

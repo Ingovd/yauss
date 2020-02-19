@@ -11,9 +11,6 @@ USR_HTML_URL_ADD_1URL = Markup(
 USR_URL_DEL_1URL = "Successfully removed url: {}"
 USR_UPDATE_1URL_2URL = "Successfully updated {} to {}"
 
-APP_INVALID_DB = ("Invalid (or no) database configured, "
-                  "running the service in memory (TESTING ONLY)")
-APP_DB_SETUP_1ERR = "Unexpected error when setting up database: {}"
 APP_KEY_1ERR = "Key store error during url creation: {}"
 APP_UNEXPECTED_1ERR = "Unexpected error when handling url creation: {}"
 APP_CACHE_1ERR = "Unexpected error when retrieving from cache: {}"
