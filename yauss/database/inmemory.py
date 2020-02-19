@@ -2,7 +2,6 @@ from .api import *
 
 class InMemoryDB():
     def __init__(self, urldict=None, keyset=None):
-        print("Creating an im memory DB")
         self.urls = urldict
         if not urldict:
             self.urls = dict()
