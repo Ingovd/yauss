@@ -5,7 +5,7 @@ SERVER_NAME = 'localhost:5000'
 
 # Supports: sql, mongo
 # Leave blank for testing with in memory database
-DB_BACKEND = 'sql'
+# DB_BACKEND = 'mongo'
 
 # Setup SQLite database URI if DB_BACKEND='sql'
 # Will set SQLALCHEMY_DATABASE_URI to 'dialect:///relative/path/to/database.db'
