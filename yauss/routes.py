@@ -1,3 +1,5 @@
+from typing import Optional
+
 from flask import (Blueprint,
                    render_template,
                    request,
@@ -6,6 +8,7 @@ from flask import (Blueprint,
                    flash,
                    current_app as app)
 
+from urllib.parse import urlparse
 
 from .templates.messages import *
 
@@ -13,23 +16,31 @@ from .templates.messages import *
 url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
 
+def format_url(long_url: str) -> Optional[str]:
+    parsed_url = urlparse(long_url)
+    if not parsed_url.scheme:
+        parsed_url = urlparse(f"http://{long_url}")
+    if parsed_url.netloc:
+        return parsed_url.geturl()
+    return None
+
+
 @url_crud.route('/', methods=['POST'])
 def handle_create_url():
+    if not (long_url := request.form.get('long_url', '')):
+        flash(USR_INVALID_URL)
+        return redirect('/')
     try:
-        long_url = request.form['long_url']
         key = app.key_gateway.consume_key()
         app.urls[key] = long_url
-    except (KeyError, ValueError):
-        flash(USR_INVALID_URL)
+        short = f"{app.config['SERVER_NAME']}/{key}"
+        flash(USR_HTML_URL_ADD_1URL.format(short))
     except KeyStoreError as err:
         app.logger.warning(APP_KEY_1ERR.format(err))
         flash(USR_UNEXPECTED)
     except Exception as err:
         app.logger.warning(APP_UNEXPECTED_1ERR.format(err))
         flash(USR_UNEXPECTED)
-    else:
-        short = f"{app.config['SERVER_NAME']}/{key}"
-        flash(USR_HTML_URL_ADD_1URL.format(short))
     finally:
         return redirect('/')
 
