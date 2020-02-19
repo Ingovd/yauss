@@ -3,8 +3,7 @@ import os
 # Domain the service is running at
 SERVER_NAME = 'localhost:5000'
 
-# Supports: sql, mongo
-# Leave blank for testing with in memory database
+# Supports: mongo, sql, inmemory(default)
 # DB_BACKEND = 'mongo'
 
 # Setup SQLite database URI if DB_BACKEND='sql'
@@ -21,7 +20,10 @@ MONGO_URI = 'mongodb://127.0.0.1:27017/urldb'
 CACHE_KEY_REFILL = 10
 
 # flask_caching configuration
+# Supports: simple, redis (UNTESTED)
 CACHE_TYPE = 'simple'
+# Set if CACHE_TYPE=redis
+# CACHE_REDIS_URL = redis://user:password@localhost:6379/2
 CACHE_DEFAULT_TIMEOUT = 86400
 
 
