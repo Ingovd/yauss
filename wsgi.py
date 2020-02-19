@@ -39,7 +39,6 @@ def setup_instance_path(path):
     if os.path.isdir(abs_path):
         return abs_path
     raise OSError(f"Neither {path} nor {abs_path} exists.")
-    
 
 
 if __name__ == "__main__":
