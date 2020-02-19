@@ -1,9 +1,14 @@
 from .api import *
 
 class InMemoryDB():
-    def __init__(self, urldict={}, keyset=set()):
+    def __init__(self, urldict=None, keyset=None):
+        print("Creating an im memory DB")
         self.urls = urldict
+        if not urldict:
+            self.urls = dict()
         self.keys = keyset
+        if not keyset:
+            self.keys = set()
     
     def init_app(self, app):
         pass

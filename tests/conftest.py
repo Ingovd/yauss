@@ -5,7 +5,8 @@ import pytest
 
 from flask import message_flashed
 
-from yauss import create_app as create_yauss
+from yauss import (url_inits,
+                   create_app as create_yauss)
 from key_store import create_app as create_key_store
 
 
@@ -45,3 +46,10 @@ def key_store(path):
     key_store = create_key_store({'INSTANCE_PATH': path})
     return key_store
 
+# @pytest.fixture(params=['sql', 'inmemory'])
+# def urls(request):
+#     print(request.param)
+#     url_init = url_inits[request.param]
+#     db_backend = url_init['backend']()
+#     urls = url_init['api'](db_backend)
+#     return urls

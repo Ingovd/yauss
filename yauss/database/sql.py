@@ -69,5 +69,5 @@ class SqlUrls(UrlAPI):
             session.delete(url)
 
     @with_scoped_session
-    def count(self) -> int:
+    def count(self, session=None) -> int:
         return session.query(Url).count()
