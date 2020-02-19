@@ -1,29 +1,28 @@
+from contextlib import contextmanager
+
 from flask import message_flashed
 
 from yauss import create_app
 
 from yauss.templates.messages import *
 
-recorded = []
-def record(sender, message, category, **extra):
-    recorded.append(message)
 
-def record_flashes(func):
+@contextmanager
+def record_flashes(app):
     recorded = []
-    def wrapper(app, *args, **kwargs):
-        message_flashed.connect(record, app)
-        with app.test_client().session_transaction():
-            return func(app, *args, **kwargs)
-    return wrapper
+    def record(sender, message, category, **extra):
+        recorded.append(message)
+    message_flashed.connect(record, app)
+    yield recorded
+    message_flashed.disconnect(record, app)
 
 def test_empty_db(client):
     response = client.get('/')
     assert b'No shortened URLs in the system, add one below.' in response.data
 
-@record_flashes
 def test_bad_url(app):
     client = app.test_client()
-    with client.session_transaction():
+    with record_flashes(app) as recorded:
         response = client.post('/', data=dict(long_url=""))
         assert USR_INVALID_URL in recorded
 
