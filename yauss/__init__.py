@@ -21,7 +21,7 @@ url_inits   = {'mongo': {'backend': PyMongo,    'api': MongoUrls},
 
 
 def create_app(config={}):
-    if path := config.get('INSTANCE_PATH', None):
+    if path := config.get('INSTANCE_PATH'):
         app = Flask(__name__, instance_path=path)
     else:
         app = Flask(__name__, instance_relative_config=True)

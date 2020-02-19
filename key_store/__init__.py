@@ -17,9 +17,9 @@ key_inits   = {'mongo': {'backend': PyMongo,    'api': MongoKeys},
                'inmemory': key_default}
 
 
-def create_app(instance_path=None):
-    if instance_path:
-        app = Flask(__name__, instance_path=instance_path)
+def create_app(config={}):
+    if path := config.get('INSTANCE_PATH'):
+        app = Flask(__name__, instance_path=path)
     else:
         app = Flask(__name__, instance_relative_config=True)
     app.logger.info(f"Created Flask application in folder: {app.instance_path}")
