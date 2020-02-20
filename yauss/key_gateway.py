@@ -5,7 +5,8 @@ from flask import abort
 
 
 class KeyStoreError(Exception):
-    pass
+    def __init__(self, message='Generic key store error'):
+        super().__init__(message)
 
 
 class KeyGateway():
@@ -45,12 +46,13 @@ class KeyGateway():
         raise KeyStoreError("Received zero keys from store")
         
 
-    def consume_key(self, key=None):
+    def consume(self, key=None):
         try:
             if key is None:
                 return self._get_key()
             elif self._approve_key(key):
                 return key
         except ConnectionError as err:
-            raise KeyStoreError(err)
+            app.logger.error(APP_KEY_1ERR.format(err))
+            raise KeyStoreError("Connection error with key store")
         return None

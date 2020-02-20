@@ -1,5 +1,9 @@
 import os
 
+from typing import Optional
+
+from urllib.parse import urlparse
+
 from flask import Flask
 from flask_caching import Cache
 from flask_pymongo import PyMongo
@@ -33,6 +37,7 @@ def create_app(config={}):
         init_database(app)
         init_key_gateway(app)
         init_cache(app)
+        init_url_formats(app)
         init_routes(app)
     return app
 
@@ -57,14 +62,28 @@ def init_database(app):
 def init_key_gateway(app):
     if 'KEY_STORE_URI' not in app.config:
         local_key_store(app)
-    app.key_gateway = KeyGateway(app.config['KEY_STORE_URI'],
-                                 app.config.get('CACHE_KEY_REFILL', 3))
+    app.keys = KeyGateway(app.config['KEY_STORE_URI'],
+                          app.config.get('CACHE_KEY_REFILL', 3))
 
 
 def init_cache(app):
     cache = Cache()
     cache.init_app(app)
     app.cache = cache
+
+
+def format_url(url: str) -> Optional[str]:
+    parsed_url = urlparse(url)
+    if not parsed_url.scheme:
+        parsed_url = urlparse(f"http://{url}")
+    if parsed_url.netloc:
+        return parsed_url.geturl()
+    return None
+
+
+def init_url_formats(app):
+    app.format_url = format_url
+    app.short_url = lambda key : f"{app.config['SERVER_NAME']}/{key}"
 
 
 def init_routes(app):

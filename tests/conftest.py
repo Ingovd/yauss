@@ -5,13 +5,21 @@ import pytest
 
 from flask import message_flashed
 
+from key_store import create_app as create_key_store
+
 from yauss import (url_inits,
                    create_app as create_yauss)
-from key_store import create_app as create_key_store
+from yauss.key_gateway import KeyStoreError
+
 
 
 class MockKey():
-    def consume_key(self):
+    def __init__(self, fail=False):
+        self.fail = fail
+
+    def consume(self):
+        if self.fail:
+            raise KeyStoreError("Mock error")
         return 'abcdefgh'
 
 
@@ -22,7 +30,8 @@ def path(request):
                   f"DB_BACKEND=    '{request.param}'\n"
                    "SERVER_NAME=   'localhost:5000'\n"
                    "SECRET_KEY=    'sososecret'\n"
-                   "KEY_STORE_URI= 'mock'")
+                   "KEY_STORE_URI= 'mock'\n"
+                   "CACHE_TYPE=    'simple'")
         with open(os.path.join(path, 'config.py'), "w") as configpy:
             configpy.write(config)
         yield path
@@ -32,7 +41,7 @@ def path(request):
 def yauss(path):
     yauss = create_yauss({'INSTANCE_PATH': path})
     with yauss.app_context():
-        yauss.key_gateway = MockKey()
+        yauss.keys = MockKey()
         yield yauss
 
 

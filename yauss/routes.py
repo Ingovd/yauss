@@ -1,5 +1,3 @@
-from typing import Optional
-
 from flask import (Blueprint,
                    render_template,
                    request,
@@ -8,7 +6,7 @@ from flask import (Blueprint,
                    flash,
                    current_app as app)
 
-from urllib.parse import urlparse
+from .key_gateway import KeyStoreError
 
 from .templates.messages import *
 
@@ -16,33 +14,37 @@ from .templates.messages import *
 url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
 
-def format_url(long_url: str) -> Optional[str]:
-    parsed_url = urlparse(long_url)
-    if not parsed_url.scheme:
-        parsed_url = urlparse(f"http://{long_url}")
-    if parsed_url.netloc:
-        return parsed_url.geturl()
-    return None
-
-
-@url_crud.route('/', methods=['POST'])
-def handle_create_url():
-    if not (long_url := request.form.get('long_url', '')):
+def try_commit_form_url(get_key):
+    form_url = request.form.get('long_url', '')
+    if not (long_url := app.format_url(form_url)):
         flash(USR_INVALID_URL)
-        return redirect('/')
+        return
     try:
-        key = app.key_gateway.consume_key()
+        key = get_key()
         app.urls[key] = long_url
-        short = f"{app.config['SERVER_NAME']}/{key}"
-        flash(USR_HTML_URL_ADD_1URL.format(short))
-    except KeyStoreError as err:
-        app.logger.warning(APP_KEY_1ERR.format(err))
-        flash(USR_UNEXPECTED)
+        return long_url
     except Exception as err:
         app.logger.warning(APP_UNEXPECTED_1ERR.format(err))
         flash(USR_UNEXPECTED)
-    finally:
+
+@url_crud.route('/', methods=['POST'])
+def handle_create_url(key=None):
+    if new_url := try_commit_form_url(app.keys.consume):
+        flash(USR_HTML_URL_ADD_1URL.format(app.short_url(key)))
         return redirect('/')
+    else:
+        return redirect(request.url_rule)
+
+
+@url_crud.route('/update/<key>', methods=['POST'])
+def handle_update_url(key=None):
+    if not (url := app.urls[key]):
+        abort(404)
+    if new_url := try_commit_form_url(lambda : key):
+        flash(USR_UPDATE_1URL_2URL.format(url, new_url))
+        return redirect('/')
+    else:
+        return redirect(request.url_rule)
 
 
 @url_crud.route('/<key>')
@@ -61,20 +63,6 @@ def handle_read_url(key):
     except Exception as err:
         app.logger.warning(APP_CACHE_1ERR.format(err))
     return response
-
-
-@url_crud.route('/update/<key>', methods=['POST'])
-def handle_update_url(key):
-    try:
-        new_url = request.form['long_url']
-    except KeyError:
-        flash(USR_INVALID_URL)
-        return redirect(f"/update/{key}")
-    if url := app.urls[key]:
-        app.urls.update_url(key, new_url)
-        flash(USR_UPDATE_1URL_2URL.format(url, new_url))
-        return redirect('/')
-    abort(404)
 
 
 @url_crud.route('/delete/<key>')
