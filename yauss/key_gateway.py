@@ -1,4 +1,5 @@
-from requests import get
+from requests import get as http_get
+
 from requests.exceptions import ConnectionError
 
 from flask import abort
@@ -13,21 +14,23 @@ class KeyGateway():
     def __init__(self, address, cache_refill=10):
         super().__init__()
         self.key_cache = set()
+        self.get = http_get
+        self.json = lambda response : response.json()
         self.address = address
         self.refill = cache_refill
 
     def _request_keys(self, n):
-        response = get(f"{self.address}/request/{n}")
+        response = self.get(f"{self.address}/request/{n}")
         if response:
-            return response.json()['keys']
+            return self.json(response)['keys']
         else:
             msg = f"Requesting {n} keys response: {response.status_code}"
             raise KeyStoreError(msg)
 
     def _approve_key(self, key):
-        response = get(f"{self.address}/{key}")
+        response = self.get(f"{self.address}/approve/{key}")
         if response:
-            return response.json()['approved']
+            return self.json(response)['approved']
         else:
             msg = f"Approving {key} response: {response.status_code}"
             raise KeyStoreError(msg)

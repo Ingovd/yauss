@@ -1,3 +1,5 @@
+import abc
+
 from typing import Optional, List
 
 from collections import namedtuple
@@ -11,23 +13,29 @@ class UrlAPI(MutableMapping):
     def __init__(self, db_backend):
         self.db_backend = db_backend
 
+    @abc.abstractmethod
     def insert_url(self, key: str, long_url: str) -> None:
-        raise NotImplementedError
+        """ Insert long_url in the database backend with new key """
 
+    @abc.abstractmethod
     def read_url(self, key: str) -> Optional[str]:
-        raise NotImplementedError
+        """ Retrieve url with key, returns None if key does not exist. """
 
+    @abc.abstractmethod
     def read_all_urls(self) -> List[KeyUrl]:
-        raise NotImplementedError
+        """ Returns *all* url-key pairs in the database backend"""
 
+    @abc.abstractmethod
     def update_url(self, key: str, long_url: str) -> None:
-        raise NotImplementedError
+        """ Updates existing key with new url """
 
+    @abc.abstractmethod
     def delete_url(self, key: str) -> None:
-        raise NotImplementedError
+        """ Deletes key from database backend if it exists"""
 
+    @abc.abstractmethod
     def count(self) -> int:
-        raise NotImplementedError
+        """ Returns the number of key-url pairs in the database backend """
 
     def __getitem__(self, key):
         return self.read_url(key)
