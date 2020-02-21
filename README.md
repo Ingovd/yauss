@@ -5,7 +5,7 @@ The web application is written in **python 3.8** using the Flask web framework.
 I chose Flask both because of it's microarchitecture nature, making it a good fit for this project,
 and because I wanted to learn something new (I had some experience using PHP and Django).
 
-A live version of the system is running at http://www.yauss.tk.
+A live version of the system is running at http://yauss.tk.
 
 
 ## Setup ##
