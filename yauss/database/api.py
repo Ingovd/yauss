@@ -5,11 +5,18 @@ from typing import Optional, List
 from collections import namedtuple
 from collections.abc import MutableMapping
 
-
+""" Format to wrap key-URL pairs as returned by UrLAPI """
 KeyUrl = namedtuple('KeyUrl', ['key', 'url'])
 
 
 class UrlAPI(MutableMapping):
+    """Abstract wrapper for manipulating the database with key-URL pairs
+
+    Any subclass of this will automatically implement python's map interface.
+    
+    TODO: Add proper exceptions so that subclasses throw consistent errors.
+    """
+
     def __init__(self, db_backend):
         self.db_backend = db_backend
 
