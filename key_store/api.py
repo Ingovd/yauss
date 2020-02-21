@@ -8,6 +8,13 @@ _chars = list(("abcdefghijklmnopqrstuvwxyz"
 
 
 class KeyAPI():
+    """Abstract wrapper for manipulating the database containing used keys
+
+    Supports requesting n keys or testing whether a given key is in use.
+    Approving a key will prevent that key from being approved or
+    returned in any future request.
+    """
+
     def request_keys(self, n):
         keys = []
         while len(keys) < n:

@@ -1,12 +1,18 @@
 from contextlib import contextmanager
 
 from sqlalchemy import String, Column
+from sqlalchemy.exc import DatabaseError
 from sqlalchemy.ext.declarative import declarative_base
 
 from .api import KeyAPI
 
 
 Base = declarative_base()
+
+
+class Key(Base):
+    __tablename__ = 'keys'
+    key = Column(String(8), primary_key=True)
 
 
 @contextmanager
@@ -27,11 +33,6 @@ def with_scoped_session(func):
         with scoped_session(self.db) as session:
             return func(self, *args, **dict(kwargs, session=session))
     return wrapper
-
-
-class Key(Base):
-    __tablename__ = 'keys'
-    key = Column(String(8), primary_key=True)
 
 
 class SqlKeys(KeyAPI):
