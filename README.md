@@ -43,7 +43,7 @@ which is backed by an external MongoDB.
 Adding new entries to the map requires unique keys, and in order to unburden the database backing the map
 from authorising new keys, this responsibility is deferred to the *key store*.
 The key store is available to yauss through a simple RESTful API:
-a GET to `http://keystore/request/<n>;` provides (up to) n guaranteed unique keys,
+a GET to `http://keystore/request/<n>` provides (up to) n guaranteed unique keys,
 and a GET to `http://keystore/approve/<key>` returns True if the key is available
 (any future approval attempts of the same key will returns False)
 
@@ -54,7 +54,7 @@ or (an untested) redis cache.
 Furthermore, new entries into the map should also happen quickly, and in order
 to facilitate this, yauss maintains a cache of unique keys to employ.
 
-*Note*: in the current implementation, this cache is backed by python's set container (which is not thread safe).
+**Note**: in the current implementation, this cache is backed by python's set container (which is not thread safe).
 A better solution for the cache would be a thread safe circular buffer, so that a worker thread can periodically
 refill the cache without blocking the consuming end of the buffer.
 
@@ -65,9 +65,18 @@ The currrent implementation of the key store uses an sqlite or MongoDB database 
 have been requested or approved by a yauss service.
 The generation of keys is currently handled by simply sampling the key space randomly and verifying whether
 it exists in the underlying database.
-*Note*: to expedite the prototype implementation,
+
+**Note 1**: to expedite the prototype implementation,
 keys are currently transmitted encoded in a json text format,
 though sending plain bytes is preferred in an actualy system.
+
+**Note 2**: Currently, once a key has been generated it can never be used again.
+In order for the system to be a bit more durable w.r.t. to the key pool (though 2^48 is quite substantial),
+keys can be given an expiration time.
+It is then up to yauss to insert key-URL pairs with a matching expiration date.
+Finally, when a key is generated whose expiration time has passed, the key can be used again.
+To still faciliate simple caching of keys at the yauss service, it can maintain multiple caches of,
+e.g. 1 week, 1 month, 1 year, and indefinite keys.
 
 ### Database ###
 
@@ -78,3 +87,5 @@ The database is the authority over the key-URL map.
 
 To scale up the system, all services can be scaled individually (either horizontally or vertically).
 The yauss service is designed so that many instances can run in parallel behind a reverse-proxy.
+Since yauss only depends on the key store api, the key store itself can be scaled by a simple prefix-sharding
+strategy.
