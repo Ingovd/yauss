@@ -13,10 +13,21 @@ from .key_gateway import KeyStoreError
 from .templates.messages import *
 
 
+""" Flask blueprint that handles the URL CRUD """
 url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
 
 def commit_url(get_key: Callable[...,str], unsafe_url: str) -> Optional[str]:
+    """ Method for routes that need to commit a user provided URL
+
+    If the URL can be formatted correctly, and the key factory provides a key
+    then the key-URL pair will be committed to the database backend.
+
+    If the URL cannot be formatted, a user warning is flashed.
+    If the key factory or the database commit fails, an error will be logged
+    and the users will be flashed with an internal server error.
+    """
+
     if not (long_url := app.format_url(unsafe_url)):
         flash(USR_INVALID_URL)
         return None
@@ -25,7 +36,7 @@ def commit_url(get_key: Callable[...,str], unsafe_url: str) -> Optional[str]:
         app.urls[key] = long_url
         return long_url
     except Exception as err:
-        app.logger.warning(APP_UNEXPECTED_1ERR.format(err))
+        app.logger.error(APP_UNEXPECTED_1ERR.format(err))
         flash(USR_UNEXPECTED)
     return None
 
@@ -53,6 +64,12 @@ def handle_update_url(key=None):
 
 @url_crud.route('/<key>')
 def handle_read_url(key):
+    """ Redirect route
+    
+    TODO: Isolate the caching logic; there exists a caching decorator,
+          but I haven't tested if this caches 404's.
+    """
+
     try:
         if response := app.cache.get(key):
             return response
