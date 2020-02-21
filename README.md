@@ -5,6 +5,8 @@ The web application is written in **python 3.8** using the Flask web framework.
 I chose Flask both because of it's microarchitecture nature, making it a good fit for this project,
 and because I wanted to learn something new (I had some experience using PHP and Django).
 
+A live version of the system is running at http://www.yauss.tk.
+
 
 ## Setup ##
 
@@ -34,8 +36,8 @@ The system consists of three services.
 3. a database, which stores all key-URL pairs
 
 If the system is run with the default configuration with no external database (MongoDB),
-all three services are running on the same host,
-with the key store api available at `http://hostname/keys/`
+all three services are running on the same host, with the key store api available at `http://hostname/keys/`.
+The live system has its key store running on a different host, at the address http://keys.yauss.tk
 
 
 ### Yauss ###
@@ -56,11 +58,11 @@ most importantly, redirects should be snappy.
 In order to facilitate this, yauss supports simple caching of redirects (backed by a python map),
 or (an untested) redis cache.
 Furthermore, new entries into the map should also happen quickly, and in order
-to facilitate this, yauss maintains a cache of unique keys to employ.
+to facilitate this, yauss maintains a pool of unique keys to employ (cached from the key store).
 
-**Note**: in the current implementation, this cache is backed by python's set container (which is not thread safe).
-A better solution for the cache would be a thread safe circular buffer, so that a worker thread can periodically
-refill the cache without blocking the consuming end of the buffer.
+**Note**: in the current implementation, this pool is backed by python's set container (which is not thread safe).
+A better solution for the pool would be a thread safe circular buffer, so that a worker thread can periodically
+refill the pool without blocking the consuming end of the buffer.
 
 ### Key Store ###
 
