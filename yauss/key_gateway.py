@@ -15,7 +15,7 @@ class KeyGateway():
         super().__init__()
         self.key_cache = set()
         self.get = http_get
-        self.json = lambda response : response.json()
+        self.json = lambda response: response.json()
         self.address = address
         self.refill = cache_refill
 
@@ -47,7 +47,6 @@ class KeyGateway():
             self.key_cache.update(keys[1:])
             return keys[0]
         raise KeyStoreError("Received zero keys from store")
-        
 
     def consume(self, key=None):
         try:
