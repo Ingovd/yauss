@@ -3,10 +3,10 @@ from .api import *
 
 class MongoUrls(UrlAPI):
     """ MongoDB backed implemementation of the URL API
-    
+
     TODO: Catch errors thrown by PyMongo and propagate as custom Exception
     """
-    
+
     def __init__(self, mongodb):
         super().__init__(mongodb)
         self.urls = mongodb.db.urls
