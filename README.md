@@ -67,16 +67,16 @@ The generation of keys is currently handled by simply sampling the key space ran
 it exists in the underlying database.
 
 **Note 1**: to expedite the prototype implementation,
-keys are currently transmitted encoded in a json text format,
-though sending plain bytes is preferred in an actualy system.
+keys are currently generated and transmitted text format,
+though representing them as plain bytes is preferred in an actual system.
 
 **Note 2**: Currently, once a key has been generated it can never be used again.
 In order for the system to be a bit more durable w.r.t. to the key pool (though 2^48 is quite substantial),
 keys can be given an expiration time.
-It is then up to yauss to insert key-URL pairs with a matching expiration date.
+It is then up to yauss to insert key-URL pairs so that the URL expiration is less than the key expiration.
 Finally, when a key is generated whose expiration time has passed, the key can be used again.
-To still faciliate simple caching of keys at the yauss service, it can maintain multiple caches of,
-e.g. 1 week, 1 month, 1 year, and indefinite keys.
+To still faciliate simple caching of keys at the yauss service, it can maintain multiple key caches with
+e.g. 1 week, 1 month, 1 year, and indefinite expiration times.
 
 ### Database ###
 
@@ -86,6 +86,17 @@ The database is the authority over the key-URL map.
 ## Scaling Up ##
 
 To scale up the system, all services can be scaled individually (either horizontally or vertically).
-The yauss service is designed so that many instances can run in parallel behind a reverse-proxy.
-Since yauss only depends on the key store api, the key store itself can be scaled by a simple prefix-sharding
-strategy.
+The yauss service is designed so that many instances can run in parallel behind a reverse-proxy,
+since it only depends on a mutable mapping api and the key store api.
+Both of thesecan be scaled horizontally by a simple key-prefix-sharding strategy.
+
+**Note**: Since the current system has not (intended) way of removing key-URL pairs from the system,
+cache invalidation is not an issue.
+However, if users are allowed to delete their keys (eitherr manually or through expiration),
+then cache invalidation needs to be taken into account.
+The expiration of key-URL pairs can easily be handled with any caching strategy by simply adding
+the expiration date to the cache; when an expired URL is requested, it is simply removed from
+whatever cache it was in.
+To support manual deletion (or even updates) of URLs, we could let key-URL pairs be cached
+for only a limited amount of time, meaning that a delete/update would only be visible after
+the cache has expired.
