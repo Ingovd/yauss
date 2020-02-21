@@ -19,7 +19,7 @@ is to receive new URL entries and redirect existing keys to their corresponding 
 If the service is running at http://hostname/, this address provides a basic CRUD
 for adding URLs. For testing purposes, it also offers update/delete functionality
 (though these don't work well with caching).
-Once a URL has been added, the user is given the shortened URL of the form http://hostname/<key>.
+Once a URL has been added, the user is given the shortened URL of the form http://hostname/&lt;key&gt;.
 Visiting this address with a valid key will result in a http redirect to the corresponding URL.
 
 ## Server-side Design Overview ##
@@ -43,8 +43,8 @@ which is backed by an external MongoDB.
 Adding new entries to the map requires unique keys, and in order to unburden the database backing the map
 from authorising new keys, this responsibility is deferred to the *key store*.
 The key store is available to yauss through a simple RESTful API:
-a GET to http://keystore/request/<n> provides (up to) n guaranteed unique keys,
-and a GET to http://keystore/approve/<key> returns True if the key is available
+a GET to http://keystore/request/&lt;n&gt; provides (up to) n guaranteed unique keys,
+and a GET to http://keystore/approve/&lt;key&gt; returns True if the key is available
 (any future approval attempts of the same key will returns False)
 
 The main non-functional requirement (besides correctness) for this service is to respond quickly;
