@@ -1,6 +1,9 @@
 # Yet Another URL Shorting Service. #
 
 This is my attempt at creating a URL shorting service with scalability in mind.
+The web application is written in **python 3.8** using the Flask web framework.
+I chose Flask both because of it's microarchitecture nature, making it a good fit for this project,
+and because I wanted to learn something new (I had some experience using PHP and Django).
 
 
 ## Setup ##
@@ -17,8 +20,9 @@ When the system is running, the two main responsibilities of the service
 is to receive new URL entries and redirect existing keys to their corresponding URL.
 
 If the service is running at `http://hostname/`, this address provides a basic CRUD
-for adding URLs. For testing purposes, it also offers update/delete functionality
-(though these don't work well with caching).
+for adding URLs.
+The update/delete functionality is mostly there fore testing,
+and these don't work well with caching.
 Once a URL has been added, the user is given the shortened URL of the form `http://hostname/<key>`.
 Visiting this address with a valid key will result in a http redirect to the corresponding URL.
 
@@ -90,10 +94,10 @@ The yauss service is designed so that many instances can run in parallel behind 
 since it only depends on a mutable mapping api and the key store api.
 Both of thesecan be scaled horizontally by a simple key-prefix-sharding strategy.
 
-**Note**: Since the current system has not (intended) way of removing key-URL pairs from the system,
+**Note**: Since the current system has no (intended) way of removing key-URL pairs from the system,
 cache invalidation is not an issue.
 However, if users are allowed to delete their keys (eitherr manually or through expiration),
-then cache invalidation needs to be taken into account.
+then scalable cache invalidation strategies need to be taken into account.
 The expiration of key-URL pairs can easily be handled with any caching strategy by simply adding
 the expiration date to the cache; when an expired URL is requested, it is simply removed from
 whatever cache it was in.
