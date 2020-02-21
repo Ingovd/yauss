@@ -32,8 +32,10 @@ def test_bad_key_store(yauss):
 
 
 def test_insert_url(yauss):
-    yauss.test_client().post('/', data=dict(long_url=_url))
-    assert yauss.format_url(_url) in [ku.url for ku in yauss.urls]
+    with record_flashes(yauss) as recorded:
+        response = yauss.test_client().post('/', data=dict(long_url=_url), follow_redirects=True)
+        assert _url.encode() in response.data
+        assert yauss.format_url(_url) in [ku.url for ku in yauss.urls]
 
 
 def test_del_url(yauss):

@@ -8,6 +8,8 @@ from flask import (Blueprint,
                    flash,
                    current_app as app)
 
+from .database.api import KeyUrl
+
 from .key_gateway import KeyStoreError
 
 from .templates.messages import *
@@ -17,11 +19,12 @@ from .templates.messages import *
 url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
 
-def commit_url(get_key: Callable[...,str], unsafe_url: str) -> Optional[str]:
+def commit_url(get_key: Callable[...,str], unsafe_url: str) -> Optional[KeyUrl]:
     """ Method for routes that need to commit a user provided URL
 
     If the URL can be formatted correctly, and the key factory provides a key
     then the key-URL pair will be committed to the database backend.
+    Returns the key-URL pair used on success.
 
     If the URL cannot be formatted, a user warning is flashed.
     If the key factory or the database commit fails, an error will be logged
@@ -34,7 +37,7 @@ def commit_url(get_key: Callable[...,str], unsafe_url: str) -> Optional[str]:
     try:
         key = get_key()
         app.urls[key] = long_url
-        return long_url
+        return KeyUrl(key, long_url)
     except Exception as err:
         app.logger.error(APP_UNEXPECTED_1ERR.format(err))
         flash(USR_UNEXPECTED)
@@ -43,8 +46,8 @@ def commit_url(get_key: Callable[...,str], unsafe_url: str) -> Optional[str]:
 @url_crud.route('/', methods=['POST'])
 def handle_create_url(key=None):
     form_url = request.form.get('long_url', '')
-    if new_url := commit_url(app.keys.consume, form_url):
-        flash(USR_HTML_URL_ADD_1URL.format(app.short_url(key)))
+    if keyurl := commit_url(app.keys.consume, form_url):
+        flash(USR_HTML_URL_ADD_1URL.format(app.short_url(keyurl.key)))
         return redirect('/')
     else:
         return redirect(request.url_rule)
@@ -55,8 +58,8 @@ def handle_update_url(key=None):
     if not (url := app.urls[key]):
         abort(404)
     form_url = request.form.get('long_url', '')
-    if new_url := commit_url(lambda : key, form_url):
-        flash(USR_UPDATE_1URL_2URL.format(url, new_url))
+    if keyurl := commit_url(lambda : key, form_url):
+        flash(USR_UPDATE_1URL_2URL.format(url, keyurl.url))
         return redirect('/')
     else:
         return redirect(request.url_rule)
