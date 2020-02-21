@@ -11,6 +11,8 @@ Base = declarative_base()
 
 
 class Url(Base):
+    """ SQLAlchemy schema """
+
     __tablename__ = 'urls'
     key = Column(String(8), primary_key=True)
     long_url = Column(String(), nullable=False)
@@ -18,6 +20,8 @@ class Url(Base):
 
 @contextmanager
 def scoped_session(db):
+    """ Creates a SQLAlchemy database transaction """
+
     session = db.create_scoped_session()
     try:
         yield session
@@ -30,6 +34,12 @@ def scoped_session(db):
 
 
 def with_scoped_session(func):
+    """ Decorator to add a scoped session 
+    
+    The decorated function must be a class method of a class with access
+    to an SQLAlchemy database object, as well as take a session parameter.
+    """
+
     def wrapper(self, *args, **kwargs):
         with scoped_session(self.db) as session:
             return func(self, *args, **dict(kwargs, session=session))
@@ -37,6 +47,7 @@ def with_scoped_session(func):
 
 
 class SqlUrls(UrlAPI):
+    """ SQLAlchemy backed implementation or the URL API """
     def __init__(self, sqldb):
         super().__init__(sqldb)
         self.db = sqldb

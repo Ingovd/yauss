@@ -1,6 +1,8 @@
 from .api import *
 
 class InMemoryDB():
+    """ Mock db_backend to be used with InMemoryUrls """
+
     def __init__(self, urldict=None, keyset=None):
         self.urls = urldict
         if not urldict:
@@ -13,6 +15,8 @@ class InMemoryDB():
         pass
 
 class InMemoryUrls(UrlAPI):
+    """ Implementation of UrlAPI backed by python's dict """
+
     def __init__(self, memdb):
         super().__init__(memdb)
         self.urls = memdb.urls
