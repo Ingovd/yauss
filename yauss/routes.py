@@ -1,3 +1,5 @@
+from typing import Callable, Optional
+
 from flask import (Blueprint,
                    render_template,
                    request,
@@ -14,11 +16,10 @@ from .templates.messages import *
 url_crud = Blueprint('url_crud', __name__, template_folder='templates')
 
 
-def try_commit_form_url(get_key):
-    form_url = request.form.get('long_url', '')
-    if not (long_url := app.format_url(form_url)):
+def commit_url(get_key: Callable[...,str], unsafe_url: str) -> Optional[str]:
+    if not (long_url := app.format_url(unsafe_url)):
         flash(USR_INVALID_URL)
-        return
+        return None
     try:
         key = get_key()
         app.urls[key] = long_url
@@ -26,10 +27,12 @@ def try_commit_form_url(get_key):
     except Exception as err:
         app.logger.warning(APP_UNEXPECTED_1ERR.format(err))
         flash(USR_UNEXPECTED)
+    return None
 
 @url_crud.route('/', methods=['POST'])
 def handle_create_url(key=None):
-    if new_url := try_commit_form_url(app.keys.consume):
+    form_url = request.form.get('long_url', '')
+    if new_url := commit_url(app.keys.consume, form_url):
         flash(USR_HTML_URL_ADD_1URL.format(app.short_url(key)))
         return redirect('/')
     else:
@@ -40,7 +43,8 @@ def handle_create_url(key=None):
 def handle_update_url(key=None):
     if not (url := app.urls[key]):
         abort(404)
-    if new_url := try_commit_form_url(lambda : key):
+    form_url = request.form.get('long_url', '')
+    if new_url := commit_url(lambda : key, form_url):
         flash(USR_UPDATE_1URL_2URL.format(url, new_url))
         return redirect('/')
     else:
