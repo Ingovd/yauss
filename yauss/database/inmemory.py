@@ -1,5 +1,6 @@
 from .api import *
 
+
 class InMemoryDB():
     """ Mock db_backend to be used with InMemoryUrls """
 
@@ -10,9 +11,10 @@ class InMemoryDB():
         self.keys = keyset
         if not keyset:
             self.keys = set()
-    
+
     def init_app(self, app):
         pass
+
 
 class InMemoryUrls(UrlAPI):
     """ Implementation of UrlAPI backed by python's dict """
@@ -36,6 +38,6 @@ class InMemoryUrls(UrlAPI):
 
     def delete_url(self, key: str) -> None:
         del self.urls[key]
-    
+
     def count(self) -> int:
         return len(self.urls)

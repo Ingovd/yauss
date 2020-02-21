@@ -13,7 +13,7 @@ class UrlAPI(MutableMapping):
     """Abstract wrapper for manipulating the database with key-URL pairs
 
     Any subclass of this will automatically implement python's map interface.
-    
+
     TODO: Add proper exceptions so that subclasses throw consistent errors.
     """
 

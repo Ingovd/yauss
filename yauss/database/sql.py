@@ -48,6 +48,7 @@ def with_scoped_session(func):
 
 class SqlUrls(UrlAPI):
     """ SQLAlchemy backed implementation or the URL API """
+    
     def __init__(self, sqldb):
         super().__init__(sqldb)
         self.db = sqldb
