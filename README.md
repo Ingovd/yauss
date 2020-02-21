@@ -67,7 +67,7 @@ refill the cache without blocking the consuming end of the buffer.
 Each key is a 48-bit value, encoded as 8 digit base-64 number.
 The currrent implementation of the key store uses an sqlite or MongoDB database to store all keys that
 have been requested or approved by a yauss service.
-The generation of keys is currently handled by simply sampling the key space randomly and verifying whether
+The generation of keys is currently handled by simply sampling of the key space randomly and verifying whether
 it exists in the underlying database.
 
 **Note 1**: to expedite the prototype implementation,
@@ -92,7 +92,7 @@ The database is the authority over the key-URL map.
 To scale up the system, all services can be scaled individually (either horizontally or vertically).
 The yauss service is designed so that many instances can run in parallel behind a reverse-proxy,
 since it only depends on a mutable mapping api and the key store api.
-Both of thesecan be scaled horizontally by a simple key-prefix-sharding strategy.
+Both of these can be scaled horizontally by a simple key-prefix-sharding strategy.
 
 **Note**: Since the current system has no (intended) way of removing key-URL pairs from the system,
 cache invalidation is not an issue.
