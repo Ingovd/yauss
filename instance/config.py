@@ -8,13 +8,13 @@ SERVER_NAME = 'localhost:5000'
 
 ## Supports: mongo, sql, inmemory(default)
 
-# DB_BACKEND = 'mongo'
+DB_BACKEND = 'sql'
 
 
 ## Setup SQLite database URI if DB_BACKEND='sql'
 
 # Will set SQLALCHEMY_DATABASE_URI to 'dialect:///relative/path/to/database.db'
-SQLALCHEMY_DATABASE_URI = os.path.join(f"sqlite:///", '..', 'instance', 'url.db')
+SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join('..', 'instance', 'url.db')
 
 
 ## flask_pymongo URI to MongoDB if DB_BACKEND='mongo

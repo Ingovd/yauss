@@ -26,11 +26,14 @@ class MockKey():
 @pytest.fixture(params=['sql', ''])
 def path(request):
     with tempfile.TemporaryDirectory(dir=os.path.join(os.getcwd(), 'tests')) as path:
-        config = ( "TESTING=       True\n"
-                  f"DB_BACKEND=    '{request.param}'\n"
-                   "SERVER_NAME=   'localhost:5000'\n"
-                   "SECRET_KEY=    'sososecret'\n"
-                   "CACHE_TYPE=    'simple'")
+        sqldb = 'sqlite:///' + os.path.join(path, 'url.db')
+        config = '\n'.join([
+                       "TESTING=       True",
+                      f"DB_BACKEND=    '{request.param}'",
+                      f"SQLALCHEMY_DATABASE_URI = {repr(sqldb)}",
+                       "SERVER_NAME=   'localhost:5000'",
+                       "SECRET_KEY=    'sososecretn'",
+                       "CACHE_TYPE=    'simple'"])
         with open(os.path.join(path, 'config.py'), "w") as configpy:
             configpy.write(config)
         yield path
