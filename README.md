@@ -49,9 +49,7 @@ which is backed by an external MongoDB.
 Adding new entries to the map requires unique keys, and in order to unburden the database backing the map
 from authorising new keys, this responsibility is deferred to the *key store*.
 The key store is available to yauss through a simple RESTful API:
-a GET to `http://keystore/request/<n>` provides (up to) n guaranteed unique keys,
-and a GET to `http://keystore/approve/<key>` returns True if the key is available
-(any future approval attempts of the same key will returns False)
+a GET to `http://keystore/request/<n>` provides (up to) n guaranteed unique keys.
 
 The main non-functional requirement (besides correctness) for this service is to respond quickly;
 most importantly, redirects should be snappy.
@@ -71,6 +69,12 @@ The currrent implementation of the key store uses an sqlite or MongoDB database 
 have been requested or approved by a yauss service.
 The generation of keys is currently handled by simply sampling of the key space randomly and verifying whether
 it exists in the underlying database.
+
+Besides a GET to `/request/<n>`, the key store api also supports
+a GET to `http://keystore/approve/<key>`, which returns True if the key is available
+(any future approval attempts of the same key will returns False).
+This functionality is currently not used, but was included in the api to
+support custom keys in the future.
 
 **Note 1**: to expedite the prototype implementation,
 keys are currently generated and transmitted text format,
