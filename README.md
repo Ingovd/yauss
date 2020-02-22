@@ -81,7 +81,7 @@ keys are currently generated and transmitted text format,
 though representing them as plain bytes is preferred in an actual system.
 
 **Note 2**: Currently, once a key has been generated it can never be used again.
-In order for the system to be a bit more durable w.r.t. to the key pool (though 2^48 is quite substantial),
+In order for the system to be a bit more durable w.r.t. to the available keys (though 2^48 is quite substantial),
 keys can be given an expiration time.
 It is then up to yauss to insert key-URL pairs so that the URL expiration is less than the key expiration.
 Finally, when a key is generated whose expiration time has passed, the key can be used again.
